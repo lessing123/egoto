@@ -4,9 +4,19 @@ import { MailIcon, LocationIcon, HandshakeIcon } from "../components/Icons";
 
 const Contact = () => {
   const [sent, setSent] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [profile, setProfile] = useState("Utilisateur intéressé");
+  const [message, setMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const subject = encodeURIComponent(`Message Egoto de ${name}`);
+    const body = encodeURIComponent(
+      `Nom: ${name}%0AEmail: ${email}%0AProfil: ${profile}%0A%0AMessage:%0A${message}`
+    );
+    window.location.href = `mailto:obeddegboevi@gmail.com?subject=${subject}&body=${body}`;
     setSent(true);
   };
 
@@ -61,6 +71,8 @@ const Contact = () => {
                 <label className="font-body text-xs uppercase tracking-wide text-paper-dim">Nom</label>
                 <input
                   required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   type="text"
                   className="w-full mt-2 bg-ink-soft border border-ink-line rounded-xl px-4 py-3 font-body text-paper outline-none focus:border-gold transition-colors"
                   placeholder="Votre nom"
@@ -70,6 +82,8 @@ const Contact = () => {
                 <label className="font-body text-xs uppercase tracking-wide text-paper-dim">Email</label>
                 <input
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   type="email"
                   className="w-full mt-2 bg-ink-soft border border-ink-line rounded-xl px-4 py-3 font-body text-paper outline-none focus:border-gold transition-colors"
                   placeholder="vous@exemple.com"
@@ -77,7 +91,11 @@ const Contact = () => {
               </div>
               <div>
                 <label className="font-body text-xs uppercase tracking-wide text-paper-dim">Votre profil</label>
-                <select className="w-full mt-2 bg-ink-soft border border-ink-line rounded-xl px-4 py-3 font-body text-paper outline-none focus:border-gold transition-colors">
+                <select
+                  value={profile}
+                  onChange={(e) => setProfile(e.target.value)}
+                  className="w-full mt-2 bg-ink-soft border border-ink-line rounded-xl px-4 py-3 font-body text-paper outline-none focus:border-gold transition-colors"
+                >
                   <option>Utilisateur intéressé</option>
                   <option>Ambassadeur / leader de cercle</option>
                   <option>Partenaire communautaire</option>
@@ -90,6 +108,8 @@ const Contact = () => {
                 <textarea
                   required
                   rows={4}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
                   className="w-full mt-2 bg-ink-soft border border-ink-line rounded-xl px-4 py-3 font-body text-paper outline-none focus:border-gold transition-colors resize-none"
                   placeholder="Parlez-nous de votre intérêt pour Egoto..."
                 />
