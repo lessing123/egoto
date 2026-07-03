@@ -1,59 +1,86 @@
-import React from 'react'
-import styles from '../style'
-import { logo } from '../assets'
-import { footerLinks, socialMedia } from '../constants'
+import React from "react";
+import { Link } from "react-router-dom";
+import Logo from "./Logo";
+
+const columns = [
+  {
+    title: "Produit",
+    links: [
+      { to: "/solution#tontines", label: "Tontines digitales" },
+      { to: "/solution#epargne", label: "Épargne individuelle" },
+      { to: "/solution#score", label: "Score Egoto" },
+      { to: "/telecharger", label: "Télécharger" },
+    ],
+  },
+  {
+    title: "Ressources",
+    links: [
+      { to: "/probleme", label: "Pourquoi Egoto" },
+      { to: "/contact", label: "Contact" },
+      { to: "/", label: "Accueil" },
+    ],
+  },
+];
 
 const Footer = () => {
   return (
-    <section className={`${styles.flexCenter} ${styles.paddingY} flex-col`}>
-      <div className={`${styles.flexStart} md:flex-row flex-col mb-8 w-full`}>
-        <div className='flex-1 flex flex-col justify-start mr-10'>
-          <img
-            src={logo}
-            alt='logo'
-            className='w-[266px] h-[172px] object-contain'
-          />
-          <p className={`${styles.paragraph} mt-4 max-w-[310px]`}>
-            A new way to make the payments easy, reliable and secure.         
-          </p>
-        </div>
-        <div className='flex-[1.5] w-full flex flex-row justify-between flex-wrap md:mt-0 mt-10'>
-          {footerLinks.map((link) => (
-            <div key={link.title} className='flex flex-col ss:my-0 my-4 min-w-[150px]'>
-              <h4 className='font-poppins font-medium text-[18px] leading-[27px] text-white'>
-                {link.title}
-              </h4>
-              <ul className='list-none mt-4'>
-                {link.links.map((item, index) => (
-                  <li 
-                    key={item.name} 
-                    className={`font-poppins font-normal text-[16px] leading-[24px] text-dimWhite hover:text-secondary cursor-pointer ${index !== link.links.length - 1 ? 'mb-4' : 'mb-0'}`}
-                  >
-                    {item.name}
-                  </li>
-                ))}
-              </ul>
+    <footer className="bg-ink-soft border-t border-ink-line">
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-10 py-16">
+        <div className="flex flex-col md:flex-row gap-12 md:gap-8 justify-between">
+          <div className="max-w-xs">
+            <Logo />
+            <p className="font-body text-paper-dim text-sm mt-4 leading-relaxed">
+              L'épargne togolaise digitalisée : tontines, épargne individuelle et score financier
+              accessibles depuis ton mobile, WhatsApp et USSD.
+            </p>
+            {/*
+            <div className="flex gap-4 mt-6">
+              {socials.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  aria-label={s.label}
+                  className="w-11 h-11 rounded-full border-2 border-gold flex items-center justify-center hover:bg-gold/10 transition-all text-gold"
+                >
+                  <img src={s.icon} alt={s.label} className="w-5 h-5" />
+                </a>
+              ))}
             </div>
-          ))}
+            */}
+          </div>
+
+          <div className="grid grid-cols-2 gap-10 flex-1 max-w-md">
+            {columns.map((col) => (
+              <div key={col.title}>
+                <h4 className="font-display text-paper text-base mb-4">{col.title}</h4>
+                <ul className="flex flex-col gap-3">
+                  {col.links.map((l) => (
+                    <li key={l.label}>
+                      <Link
+                        to={l.to}
+                        className="font-body text-sm text-paper-dim hover:text-gold transition-colors"
+                      >
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="knot-divider my-10" />
+
+        <div className="flex justify-center items-center text-center text-xs font-body text-paper-dim/70">
+          <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
+            <p>Egoto - Bientôt disponible</p>
+            <p className="hidden sm:block">· Pilote mobile, WhatsApp et USSD</p>
+          </div>
         </div>
       </div>
-      <div className='w-full flex justify-between items-center md:flex-row flex-col pt-6 border-t-[1px] border-t-[#3F3E45]'>
-        <p className='font-poppins font-normal text-center text-[18px] leading-[27px] text-white'>
-          2023 HooBank. All Rights Reserved.
-        </p>  
-        <div className='flex flex-row md:mt-0 mt-6'>
-          {socialMedia.map((social, index) => (
-            <img
-              src={social.icon}
-              key={social.id}
-              alt={social.id}
-              className={`w-[21px] h-[21px] object-contain cursor-pointer ${index !== socialMedia.length - 1 ? 'mr-6' : 'mr-0'}`}
-            />
-          ))}
-        </div>    
-      </div>
-    </section>
-  )
-}
+    </footer>
+  );
+};
 
-export default Footer
+export default Footer;
