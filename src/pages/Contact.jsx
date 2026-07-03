@@ -4,20 +4,52 @@ import { MailIcon, LocationIcon, HandshakeIcon } from "../components/Icons";
 
 const Contact = () => {
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [profile, setProfile] = useState("Utilisateur intéressé");
   const [message, setMessage] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    const subject = encodeURIComponent(`Message Egoto de ${name}`);
-    const body = encodeURIComponent(
-      `Nom: ${name}%0AEmail: ${email}%0AProfil: ${profile}%0A%0AMessage:%0A${message}`
-    );
-    window.location.href = `mailto:obeddegboevi@gmail.com?subject=${subject}&body=${body}`;
-    setSent(true);
+    const payload = {
+      name,
+      email,
+      profile,
+      message,
+      _subject: `Message Egoto de ${name}`,
+      _captcha: "false"
+    };
+
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/obeddegboevi@gmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        setSent(true);
+      } else {
+        throw new Error("Erreur de soumission");
+      }
+    } catch (err) {
+      console.error("Erreur lors de l'envoi :", err);
+      // Fallback sur mailto
+      const subject = encodeURIComponent(`Message Egoto de ${name}`);
+      const body = encodeURIComponent(
+        `Nom: ${name}\nEmail: ${email}\nProfil: ${profile}\n\nMessage:\n${message}`
+      );
+      window.location.href = `mailto:obeddegboevi@gmail.com?subject=${subject}&body=${body}`;
+      setSent(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -62,7 +94,7 @@ const Contact = () => {
               <HandshakeIcon className="text-gold w-12 h-12" />
               <h3 className="font-display font-semibold text-xl text-paper mt-5">Merci !</h3>
               <p className="font-body text-paper-dim text-sm mt-2">
-                On a bien reçu ton message - on revient vers toi bientôt.
+                On a bien reçu ton message - on revient vers vous bientôt.
               </p>
             </div>
           ) : (
@@ -116,9 +148,10 @@ const Contact = () => {
               </div>
               <button
                 type="submit"
-                className="mt-2 bg-gold hover:bg-gold-deep text-ink font-body font-bold px-7 py-3.5 rounded-full transition-colors"
+                disabled={loading}
+                className="mt-2 bg-gold hover:bg-gold-deep text-ink font-body font-bold px-7 py-3.5 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Envoyer le message
+                {loading ? "Envoi en cours..." : "Envoyer le message"}
               </button>
             </form>
           )}
