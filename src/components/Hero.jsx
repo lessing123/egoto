@@ -22,18 +22,20 @@ const MoneyChip = ({ className = "", children, tone = "gold", style }) => {
   );
 };
 
-const OrbitChip = ({ children, tone = "gold", angle, radius, delay = "0s" }) => (
-  <div
-    className="orbit-chip-track"
-    style={{ "--orbit-angle": angle, "--orbit-radius": radius, animationDelay: delay }}
-  >
-    <div className="orbit-chip-point">
-      <div className="orbit-chip-face" style={{ animationDelay: delay }}>
-        <MoneyChip tone={tone}>{children}</MoneyChip>
-      </div>
+const OrbitingChip = ({ children, tone = "gold", radiusClass, duration = "24s", delay = "0s", direction = "cw" }) => {
+  const animClass = direction === "cw" ? "animate-orbit-cw" : "animate-orbit-ccw";
+  return (
+    <div
+      className={`absolute left-1/2 top-1/2 z-20 ${radiusClass} ${animClass}`}
+      style={{
+        animationDelay: delay,
+        "--orbit-duration": duration,
+      }}
+    >
+      <MoneyChip tone={tone}>{children}</MoneyChip>
     </div>
-  </div>
-);
+  );
+};
 
 const DigitalMoneyFlow = () => (
   <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
@@ -41,39 +43,31 @@ const DigitalMoneyFlow = () => (
     <div className="absolute inset-x-14 top-14 h-px bg-gradient-to-r from-transparent via-gold/35 to-transparent" />
     <div className="absolute inset-x-24 bottom-20 h-px bg-gradient-to-r from-transparent via-palm/35 to-transparent" />
 
-    <MoneyChip className="left-4 top-8 animate-money-float sm:left-8 lg:left-10" tone="gold">
+    {/* Orbiting Money Chips */}
+    <OrbitingChip tone="gold" radiusClass="orbit-inner" direction="cw" delay="0s" duration="24s">
       +5 000 FCFA
-    </MoneyChip>
+    </OrbitingChip>
+    <OrbitingChip tone="palm" radiusClass="orbit-inner" direction="cw" delay="-12s" duration="24s">
+      Transfert
+    </OrbitingChip>
+    <OrbitingChip tone="terracotta" radiusClass="orbit-outer" direction="ccw" delay="0s" duration="32s">
+      Wallet
+    </OrbitingChip>
+    <OrbitingChip tone="gold" radiusClass="orbit-outer" direction="ccw" delay="-16s" duration="32s">
+      Mobile Money
+    </OrbitingChip>
 
-    <MoneyChip className="right-4 top-24 animate-money-float sm:right-8 lg:right-10" tone="palm" style={{ animationDelay: "1.4s" }}>
-      Transfert instantané
-    </MoneyChip>
-
-    <MoneyChip
-      className="left-4 top-64 animate-money-float sm:left-8 lg:left-10"
-      tone="terracotta"
-      style={{ animationDelay: "2.1s" }}
-    >
-      Wallet digital
-    </MoneyChip>
-
-    <MoneyChip
-      className="right-4 top-80 animate-money-float sm:right-8 lg:right-10"
-      tone="gold"
-      style={{ animationDelay: "0.8s" }}
-    >
-      Mobile money
-    </MoneyChip>
-
+    {/* Background moving dot */}
     <div className="absolute left-8 right-8 top-1/2 -translate-y-1/2">
       <div className="relative h-3">
         <span className="absolute left-0 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-gold shadow-[0_0_20px_rgba(201,170,79,0.9)] animate-money-flow" />
       </div>
     </div>
 
+    {/* Background circles centered */}
     <div className="absolute inset-0 rounded-[3rem] border border-white/5" />
-    <div className="absolute inset-12 rounded-full border border-gold/10 animate-spin-slow" />
-    <div className="absolute inset-20 rounded-full border border-palm/10" />
+    <div className="absolute left-1/2 top-1/2 w-[220px] h-[220px] sm:w-[330px] sm:h-[330px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold/10" style={{ animation: "spin-slow-centered 30s linear infinite" }} />
+    <div className="absolute left-1/2 top-1/2 w-[320px] h-[320px] sm:w-[460px] sm:h-[460px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-palm/10" style={{ animation: "spin-reverse-centered 40s linear infinite" }} />
     <div className="absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-gold/18 to-terracotta/10 blur-2xl" />
   </div>
 );
