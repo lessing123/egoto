@@ -109,6 +109,38 @@ body {
   animation: float-slow 7s ease-in-out infinite;
 }
 
+@keyframes money-float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.03);
+  }
+}
+
+.animate-money-float {
+  animation: money-float 6.5s ease-in-out infinite;
+}
+
+@keyframes money-flow {
+  0% {
+    transform: translate(-12px, -50%) scale(0.8);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(100% + 12px), -50%) scale(1.05);
+    opacity: 0;
+  }
+}
+
+.animate-money-flow {
+  animation: money-flow 3.8s linear infinite;
+}
+
 @keyframes spin-slow {
   from {
     transform: rotate(0deg);

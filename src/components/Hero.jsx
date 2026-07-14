@@ -2,6 +2,82 @@ import React from "react";
 import { Eyebrow, PrimaryButton, GhostButton } from "./ui";
 import { ChatBubbleIcon, MobileAppIcon, UssdIcon, CheckIcon, ChartIcon, SparkleIcon } from "./Icons";
 
+const MoneyChip = ({ className = "", children, tone = "gold", style }) => {
+  const tones = {
+    gold: "border-gold/25 bg-ink-soft/90 text-paper",
+    palm: "border-palm/25 bg-ink-soft/90 text-paper",
+    terracotta: "border-terracotta/25 bg-ink-soft/90 text-paper",
+  };
+
+  return (
+    <div
+      className={`z-20 whitespace-nowrap rounded-full border px-4 py-2 shadow-2xl backdrop-blur-md ${tones[tone]} ${className}`}
+      style={style}
+    >
+      <div className="flex items-center gap-2">
+        <span className="h-2.5 w-2.5 rounded-full bg-gold shadow-[0_0_18px_rgba(201,170,79,0.8)]" />
+        <span className="font-body text-[11px] font-semibold tracking-wide uppercase">{children}</span>
+      </div>
+    </div>
+  );
+};
+
+const OrbitChip = ({ children, tone = "gold", angle, radius, delay = "0s" }) => (
+  <div
+    className="orbit-chip-track"
+    style={{ "--orbit-angle": angle, "--orbit-radius": radius, animationDelay: delay }}
+  >
+    <div className="orbit-chip-point">
+      <div className="orbit-chip-face" style={{ animationDelay: delay }}>
+        <MoneyChip tone={tone}>{children}</MoneyChip>
+      </div>
+    </div>
+  </div>
+);
+
+const DigitalMoneyFlow = () => (
+  <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+    <div className="absolute -inset-8 rounded-[3rem] bg-gradient-to-br from-gold/10 via-transparent to-palm/10 blur-3xl" />
+    <div className="absolute inset-x-14 top-14 h-px bg-gradient-to-r from-transparent via-gold/35 to-transparent" />
+    <div className="absolute inset-x-24 bottom-20 h-px bg-gradient-to-r from-transparent via-palm/35 to-transparent" />
+
+    <MoneyChip className="left-4 top-8 animate-money-float sm:left-8 lg:left-10" tone="gold">
+      +5 000 FCFA
+    </MoneyChip>
+
+    <MoneyChip className="right-4 top-24 animate-money-float sm:right-8 lg:right-10" tone="palm" style={{ animationDelay: "1.4s" }}>
+      Transfert instantané
+    </MoneyChip>
+
+    <MoneyChip
+      className="left-4 top-64 animate-money-float sm:left-8 lg:left-10"
+      tone="terracotta"
+      style={{ animationDelay: "2.1s" }}
+    >
+      Wallet digital
+    </MoneyChip>
+
+    <MoneyChip
+      className="right-4 top-80 animate-money-float sm:right-8 lg:right-10"
+      tone="gold"
+      style={{ animationDelay: "0.8s" }}
+    >
+      Mobile money
+    </MoneyChip>
+
+    <div className="absolute left-8 right-8 top-1/2 -translate-y-1/2">
+      <div className="relative h-3">
+        <span className="absolute left-0 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-gold shadow-[0_0_20px_rgba(201,170,79,0.9)] animate-money-flow" />
+      </div>
+    </div>
+
+    <div className="absolute inset-0 rounded-[3rem] border border-white/5" />
+    <div className="absolute inset-12 rounded-full border border-gold/10 animate-spin-slow" />
+    <div className="absolute inset-20 rounded-full border border-palm/10" />
+    <div className="absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-gold/18 to-terracotta/10 blur-2xl" />
+  </div>
+);
+
 const PhoneMock = () => (
   <div className="relative w-full max-w-[340px] mx-auto animate-float-slow">
     <div className="absolute -inset-6 bg-gold/10 rounded-[3rem] blur-3xl -z-10" />
@@ -71,9 +147,8 @@ const Hero = () => {
             <span className="text-gradient-gold italic">bien accompagné.</span>
           </h1>
           <p className="font-body text-paper-dim text-lg mt-6 max-w-lg leading-relaxed">
-            Egoto digitalise la tontine togolaise : cotisez seul·e ou en cercle, suivez
-            votre épargne et accédez à un score financier clair, sur WhatsApp, App mobile
-            et USSD.
+            Egoto transforme la tontine en experience digitale claire, mobile et traçable,
+            du WhatsApp au score financier.
           </p>
 
           <div className="flex flex-wrap gap-4 mt-9">
@@ -97,7 +172,14 @@ const Hero = () => {
           </div>
         </div>
 
-        <PhoneMock />
+        <div className="relative min-h-[620px] sm:min-h-[680px] md:min-h-[720px] flex items-end justify-center pb-8">
+          <div className="absolute inset-x-0 top-0 h-[500px] sm:h-[560px]">
+            <DigitalMoneyFlow />
+          </div>
+          <div className="relative z-10 w-full">
+            <PhoneMock />
+          </div>
+        </div>
       </div>
     </section>
   );

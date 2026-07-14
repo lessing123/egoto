@@ -3,11 +3,11 @@ import { Pill, PrimaryButton, GhostButton, Eyebrow } from "./ui";
 
 export const StatBand = ({ stats }) => (
   <section className="relative border-y border-ink-line bg-ink-soft/60">
-    <div className="max-w-[1400px] mx-auto px-6 sm:px-10 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+    <div className="max-w-[1400px] mx-auto px-6 sm:px-10 py-16 grid grid-cols-2 md:grid-cols-4 gap-8">
       {stats.map((s, i) => (
         <div key={i} className="text-center md:text-left">
-          <p className="font-display font-bold text-3xl sm:text-4xl text-gold">{s.value}</p>
-          <p className="font-body text-paper-dim text-sm mt-2 leading-snug">{s.label}</p>
+          <p className="font-display font-bold text-4xl sm:text-5xl lg:text-6xl text-gold">{s.value}</p>
+          <p className="font-body text-paper-dim text-base sm:text-base lg:text-lg mt-3 leading-relaxed">{s.label}</p>
         </div>
       ))}
     </div>
