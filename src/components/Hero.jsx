@@ -167,10 +167,10 @@ const Hero = () => {
         </div>
 
         <div className="relative min-h-[620px] sm:min-h-[680px] md:min-h-[720px] flex items-end justify-center pb-8">
-          <div className="absolute inset-x-0 top-0 h-[500px] sm:h-[560px]">
+          <div className="absolute inset-x-0 top-0 h-[500px] sm:h-[560px] z-10">
             <DigitalMoneyFlow />
           </div>
-          <div className="relative z-10 w-full">
+          <div className="relative z-20 w-full">
             <PhoneMock />
           </div>
         </div>
