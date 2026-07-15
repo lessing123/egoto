@@ -48,6 +48,9 @@ export const Pill = ({ children, tone = "gold" }) => {
     gold: "bg-gold/10 text-gold border-gold/30",
     palm: "bg-palm/15 text-palm-light border-palm/30",
     terracotta: "bg-terracotta/10 text-terracotta border-terracotta/30",
+    gold1: "bg-gold/10 text-gold border-gold/30",
+    palm1: "bg-palm/15 text-palm-light border-palm/30",
+    terracotta1: "bg-terracotta/10 text-terracotta border-terracotta/30",
   };
   return (
     <span

@@ -7,6 +7,7 @@ const MoneyChip = ({ className = "", children, tone = "gold", style }) => {
     gold: "border-gold/25 bg-ink-soft/90 text-paper",
     palm: "border-palm/25 bg-ink-soft/90 text-paper",
     terracotta: "border-terracotta/25 bg-ink-soft/90 text-paper",
+
   };
 
   return (
@@ -45,17 +46,16 @@ const DigitalMoneyFlow = () => (
 
     {/* Orbiting Money Chips */}
     <OrbitingChip tone="gold" radiusClass="orbit-inner" direction="cw" delay="0s" duration="24s">
-      +5 000 FCFA
+      Bot Whatsapp
     </OrbitingChip>
     <OrbitingChip tone="palm" radiusClass="orbit-inner" direction="cw" delay="-12s" duration="24s">
-      Transfert
+      Code USSD
     </OrbitingChip>
-    <OrbitingChip tone="terracotta" radiusClass="orbit-outer" direction="ccw" delay="0s" duration="32s">
-      Wallet
+
+    <OrbitingChip tone="palm" radiusClass="orbit-inner" direction="cw" delay="-12s" duration="24s">
+      ios & Android App
     </OrbitingChip>
-    <OrbitingChip tone="gold" radiusClass="orbit-outer" direction="ccw" delay="-16s" duration="32s">
-      Mobile Money
-    </OrbitingChip>
+   
 
     {/* Background moving dot */}
     <div className="absolute left-8 right-8 top-1/2 -translate-y-1/2">

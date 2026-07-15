@@ -16,6 +16,8 @@ module.exports = {
         palm: "#173325",
         "palm-light": "#2d5f4d",
         "palm-deep": "#0f1d1a",
+        paper: "#173325",
+        "paper-dim": "rgba(23, 51, 37, 0.8)",
       },
       fontFamily: {
         display: ["'Fraunces'", "serif"],
