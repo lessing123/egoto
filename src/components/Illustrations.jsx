@@ -1,5 +1,6 @@
 import React from "react";
 
+// 1. Savings & Individual Projects Illustration
 export const SavingsIllustration = () => (
   <svg
     viewBox="0 0 400 400"
@@ -39,10 +40,6 @@ export const SavingsIllustration = () => (
         <stop offset="0%" stopColor="#FBBF24" />
         <stop offset="50%" stopColor="#F59E0B" />
         <stop offset="100%" stopColor="#D97706" />
-      </linearGradient>
-      <linearGradient id="greenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#2d5f4d" />
-        <stop offset="100%" stopColor="#173325" />
       </linearGradient>
       <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
         <feDropShadow dx="0" dy="12" stdDeviation="16" floodColor="#173325" floodOpacity="0.12" />
@@ -101,6 +98,7 @@ export const SavingsIllustration = () => (
   </svg>
 );
 
+// 2. Collective Tontines (Circle) Illustration
 export const CircleIllustration = () => (
   <svg
     viewBox="0 0 400 400"
@@ -194,7 +192,8 @@ export const CircleIllustration = () => (
   </svg>
 );
 
-export const ScoreIllustration = () => (
+// 3. Score Egoto (Credit Score Gauge) Illustration
+export const ScoreGaugeIllustration = () => (
   <svg
     viewBox="0 0 400 400"
     width="100%"
@@ -205,88 +204,262 @@ export const ScoreIllustration = () => (
   >
     <style>
       {`
-        @keyframes float-card {
-          0%, 100% { transform: translateY(0) rotate(-6deg); }
-          50% { transform: translateY(-12px) rotate(-3deg); }
-        }
-        @keyframes gauge-fill {
+        @keyframes gauge-anim {
           0% { stroke-dasharray: 0 1000; }
           100% { stroke-dasharray: 310 1000; }
         }
         @keyframes needle-wiggle {
           0%, 100% { transform: rotate(0deg); }
-          50% { transform: rotate(3deg); }
+          50% { transform: rotate(4deg); }
         }
-        .anim-card { animation: float-card 6s ease-in-out infinite; transform-origin: 200px 240px; }
-        .anim-gauge { animation: gauge-fill 2s cubic-bezier(0.1, 1, 0.1, 1) forwards; }
+        @keyframes badge-float {
+          0%, 100% { transform: translateY(0); opacity: 0.8; }
+          50% { transform: translateY(-8px); opacity: 1; }
+        }
+        .anim-gauge { animation: gauge-anim 2s cubic-bezier(0.1, 1, 0.1, 1) forwards; }
         .anim-needle { animation: needle-wiggle 3s ease-in-out infinite; transform-origin: 200px 200px; }
+        .anim-badge-1 { animation: badge-float 4s ease-in-out infinite; }
+        .anim-badge-2 { animation: badge-float 4.5s ease-in-out infinite; animation-delay: 1.5s; }
       `}
     </style>
-
     <defs>
-      <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#173325" />
-        <stop offset="100%" stopColor="#0f1d1a" />
-      </linearGradient>
+      <radialGradient id="scoreGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.12" />
+        <stop offset="100%" stopColor="#FBBF24" stopOpacity="0" />
+      </radialGradient>
       <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" stopColor="#EF4444" />
         <stop offset="50%" stopColor="#FBBF24" />
         <stop offset="100%" stopColor="#22C55E" />
       </linearGradient>
-      <filter id="heavyShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <filter id="shadow-badge" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="6" stdDeviation="8" floodColor="#173325" floodOpacity="0.08" />
+      </filter>
+    </defs>
+    
+    <circle cx="200" cy="200" r="150" fill="url(#scoreGlow)" />
+    
+    {/* Gauge background track */}
+    <path
+      d="M90 200 A110 110 0 0 1 310 200"
+      stroke="rgba(23, 51, 37, 0.08)"
+      strokeWidth="16"
+      strokeLinecap="round"
+    />
+    
+    {/* Colored gauge */}
+    <path
+      d="M90 200 A110 110 0 0 1 310 200"
+      stroke="url(#gaugeGrad)"
+      strokeWidth="16"
+      strokeLinecap="round"
+      strokeDasharray="310"
+      className="anim-gauge"
+    />
+
+    {/* Gauge Needle */}
+    <g className="anim-needle">
+      <line x1="200" y1="200" x2="280" y2="140" stroke="#173325" strokeWidth="4" strokeLinecap="round" />
+      <circle cx="200" cy="200" r="8" fill="#173325" />
+    </g>
+
+    {/* Center Text */}
+    <text x="200" y="240" textAnchor="middle" fill="#173325" fontSize="32" fontWeight="bold" fontFamily="Fraunces, serif">612</text>
+    <text x="200" y="258" textAnchor="middle" fill="rgba(23, 51, 37, 0.6)" fontSize="11" fontWeight="bold" letterSpacing="1" fontFamily="sans-serif">SCORE EGOTO</text>
+
+    {/* Floating Badges */}
+    <g className="anim-badge-1" filter="url(#shadow-badge)" transform="translate(60, 230)">
+      <rect width="90" height="30" rx="15" fill="#FFFFFF" stroke="#22C55E" strokeWidth="1.5" />
+      <circle cx="20" cy="15" r="5" fill="#22C55E" />
+      <text x="52" y="19" fill="#173325" fontSize="10" fontWeight="bold" fontFamily="sans-serif" textAnchor="middle">FIABLE</text>
+    </g>
+
+    <g className="anim-badge-2" filter="url(#shadow-badge)" transform="translate(250, 230)">
+      <rect width="90" height="30" rx="15" fill="#FFFFFF" stroke="#FBBF24" strokeWidth="1.5" />
+      <circle cx="20" cy="15" r="5" fill="#FBBF24" />
+      <text x="52" y="19" fill="#173325" fontSize="10" fontWeight="bold" fontFamily="sans-serif" textAnchor="middle">CRÉDIT</text>
+    </g>
+  </svg>
+);
+
+// 4. Visa Card (De l'épargne au paiement) Illustration
+export const VisaCardIllustration = () => (
+  <svg
+    viewBox="0 0 400 400"
+    width="100%"
+    height="100%"
+    className="max-w-[340px] mx-auto overflow-visible"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <style>
+      {`
+        @keyframes float-card-only {
+          0%, 100% { transform: translateY(0) rotate(-4deg); }
+          50% { transform: translateY(-15px) rotate(2deg); }
+        }
+        @keyframes pulse-ring {
+          0% { transform: scale(0.95); opacity: 0.8; }
+          50% { transform: scale(1.05); opacity: 0.3; }
+          100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        @keyframes float-icons {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
+        }
+        .anim-card-only { animation: float-card-only 6s ease-in-out infinite; transform-origin: 200px 200px; }
+        .anim-ring { animation: pulse-ring 4s ease-in-out infinite; transform-origin: 200px 200px; }
+        .anim-icon-float-1 { animation: float-icons 4s ease-in-out infinite; }
+        .anim-icon-float-2 { animation: float-icons 4.5s ease-in-out infinite; animation-delay: 1.5s; }
+      `}
+    </style>
+    <defs>
+      <linearGradient id="cardGradOnly" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#173325" />
+        <stop offset="100%" stopColor="#0f1d1a" />
+      </linearGradient>
+      <filter id="heavyCardShadow" x="-20%" y="-20%" width="140%" height="140%">
         <feDropShadow dx="0" dy="18" stdDeviation="24" floodColor="#173325" floodOpacity="0.2" />
       </filter>
     </defs>
 
-    {/* Background Score Gauge (Semicircle) */}
-    <g transform="translate(0, 20)">
-      {/* Gauge Background track */}
-      <path
-        d="M90 200 A110 110 0 0 1 310 200"
-        stroke="rgba(23, 51, 37, 0.08)"
-        strokeWidth="16"
-        strokeLinecap="round"
-        fill="none"
-      />
-      {/* Gauge color progression */}
-      <path
-        d="M90 200 A110 110 0 0 1 310 200"
-        stroke="url(#gaugeGrad)"
-        strokeWidth="16"
-        strokeLinecap="round"
-        fill="none"
-        strokeDasharray="310"
-        className="anim-gauge"
-      />
+    {/* Background rings */}
+    <circle cx="200" cy="200" r="120" stroke="rgba(23, 51, 37, 0.06)" strokeWidth="2" className="anim-ring" />
+    <circle cx="200" cy="200" r="150" stroke="rgba(23, 51, 37, 0.03)" strokeWidth="1.5" />
 
-      {/* Needle pointing to Gold zone */}
-      <g className="anim-needle">
-        <line x1="200" y1="200" x2="280" y2="140" stroke="#173325" strokeWidth="4" strokeLinecap="round" />
-        <circle cx="200" cy="200" r="8" fill="#173325" />
-      </g>
-
-      {/* Score Text */}
-      <text x="200" y="240" textAnchor="middle" fill="#173325" fontSize="32" fontWeight="bold" fontFamily="Fraunces, serif">612</text>
-      <text x="200" y="258" textAnchor="middle" fill="rgba(23, 51, 37, 0.6)" fontSize="11" fontWeight="bold" letterSpacing="1" fontFamily="sans-serif">SCORE EGOTO</text>
-    </g>
-
-    {/* Floating VISA Card */}
-    <g className="anim-card" filter="url(#heavyShadow)">
-      {/* Card Base */}
-      <rect x="70" y="220" width="260" height="150" rx="16" fill="url(#cardGrad)" stroke="rgba(251, 191, 36, 0.25)" strokeWidth="1.5" />
+    {/* Floating Visa Card */}
+    <g className="anim-card-only" filter="url(#heavyCardShadow)">
+      <rect x="70" y="125" width="260" height="150" rx="16" fill="url(#cardGradOnly)" stroke="rgba(251, 191, 36, 0.3)" strokeWidth="2" />
       
+      {/* Gold foil lines on card */}
+      <path d="M70 180 Q150 140 250 200 T330 160" stroke="rgba(251, 191, 36, 0.08)" strokeWidth="3" fill="none" />
+      <path d="M70 210 Q140 180 230 240 T330 200" stroke="rgba(251, 191, 36, 0.05)" strokeWidth="2" fill="none" />
+
       {/* Card Details */}
-      <text x="94" y="252" fill="rgba(255, 255, 255, 0.4)" fontSize="9" fontWeight="bold" letterSpacing="1" fontFamily="sans-serif">CARTE EGOTO GOLD</text>
-      <text x="94" y="294" fill="#FFFFFF" fontSize="20" letterSpacing="3" fontFamily="monospace">•••• 4471</text>
+      <text x="94" y="156" fill="rgba(255, 255, 255, 0.4)" fontSize="9" fontWeight="bold" letterSpacing="1" fontFamily="sans-serif">CARTE EGOTO GOLD</text>
+      <text x="94" y="198" fill="#FFFFFF" fontSize="20" letterSpacing="3" fontFamily="monospace">•••• 4471</text>
       
       {/* Card Chip */}
-      <rect x="94" y="262" width="28" height="20" rx="4" fill="#FBBF24" opacity="0.9" />
+      <rect x="94" y="166" width="28" height="20" rx="4" fill="#FBBF24" opacity="0.95" />
       
       {/* Card Owner Name */}
-      <text x="94" y="342" fill="#FFFFFF" fontSize="12" fontWeight="bold" fontFamily="sans-serif">Da Adjo</text>
+      <text x="94" y="246" fill="#FFFFFF" fontSize="12" fontWeight="bold" fontFamily="sans-serif">Da Adjo</text>
       
       {/* VISA Logo */}
-      <text x="270" y="344" fill="#FBBF24" fontSize="18" fontWeight="900" fontStyle="italic" fontFamily="sans-serif">VISA</text>
+      <text x="270" y="248" fill="#FBBF24" fontSize="18" fontWeight="900" fontStyle="italic" fontFamily="sans-serif">VISA</text>
+    </g>
+
+    {/* Floating shopping / payment icons */}
+    <g className="anim-icon-float-1" transform="translate(70, 70)">
+      <circle cx="15" cy="15" r="18" fill="#FFFFFF" stroke="#FBBF24" strokeWidth="1.5" filter="url(#heavyCardShadow)" />
+      {/* Shopping bag icon */}
+      <path d="M11 12.5h8m-8 0L12 21h6l1-8.5m-6-3v2m2-2v2" stroke="#173325" strokeWidth="1.5" strokeLinecap="round" />
+    </g>
+    
+    <g className="anim-icon-float-2" transform="translate(290, 80)">
+      <circle cx="15" cy="15" r="18" fill="#FFFFFF" stroke="#2d5f4d" strokeWidth="1.5" filter="url(#heavyCardShadow)" />
+      {/* Airplane/Travel icon */}
+      <path d="M9 15h12M15 9l4 6-4 6" stroke="#173325" strokeWidth="1.5" strokeLinecap="round" />
+    </g>
+  </svg>
+);
+
+// 5. WhatsApp Multilingual Bot Illustration
+export const WhatsAppBotIllustration = () => (
+  <svg
+    viewBox="0 0 400 400"
+    width="100%"
+    height="100%"
+    className="max-w-[340px] mx-auto overflow-visible"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <style>
+      {`
+        @keyframes float-whatsapp {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+        @keyframes msg-pop-1 {
+          0%, 10% { transform: scale(0); opacity: 0; }
+          20%, 100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes msg-pop-2 {
+          0%, 35% { transform: scale(0); opacity: 0; }
+          45%, 100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes msg-pop-3 {
+          0%, 65% { transform: scale(0); opacity: 0; }
+          75%, 100% { transform: scale(1); opacity: 1; }
+        }
+        .anim-wa-phone { animation: float-whatsapp 6.5s ease-in-out infinite; }
+        .anim-msg-1 { animation: msg-pop-1 8s cubic-bezier(0.16, 1, 0.3, 1) infinite; transform-origin: 130px 145px; }
+        .anim-msg-2 { animation: msg-pop-2 8s cubic-bezier(0.16, 1, 0.3, 1) infinite; transform-origin: 270px 195px; }
+        .anim-msg-3 { animation: msg-pop-3 8s cubic-bezier(0.16, 1, 0.3, 1) infinite; transform-origin: 130px 245px; }
+      `}
+    </style>
+    <defs>
+      <radialGradient id="waGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#25D366" stopOpacity="0.12" />
+        <stop offset="100%" stopColor="#25D366" stopOpacity="0" />
+      </radialGradient>
+      <filter id="shadow-wa" x="-10%" y="-10%" width="120%" height="120%">
+        <feDropShadow dx="0" dy="12" stdDeviation="16" floodColor="#173325" floodOpacity="0.12" />
+      </filter>
+    </defs>
+
+    {/* Background glow */}
+    <circle cx="200" cy="200" r="150" fill="url(#waGlow)" />
+
+    {/* Smartphone */}
+    <g className="anim-wa-phone" filter="url(#shadow-wa)">
+      <rect x="110" y="60" width="180" height="280" rx="28" fill="#173325" stroke="rgba(23, 51, 37, 0.1)" strokeWidth="2" />
+      <rect x="118" y="68" width="164" height="264" rx="20" fill="#E5DDD5" /> {/* WhatsApp chat background grey-brown */}
+      
+      {/* Header bar */}
+      <path d="M118 68h164v35c0 4-4 8-8 8h-148c-4 0-8-4-8-8V68z" fill="#075E54" /> {/* WhatsApp dark green */}
+      <circle cx="200" cy="76" r="3" fill="#000" opacity="0.3" />
+      
+      {/* Bot Name and status */}
+      <circle cx="138" cy="91" r="10" fill="#128C7E" />
+      <text x="138" y="95" textAnchor="middle" fill="#FFFFFF" fontSize="10" fontWeight="bold" fontFamily="sans-serif">E</text>
+      
+      <text x="154" y="89" fill="#FFFFFF" fontSize="9" fontWeight="bold" fontFamily="sans-serif">Egoto Bot</text>
+      <text x="154" y="98" fill="#25D366" fontSize="7" fontWeight="bold" fontFamily="sans-serif">En ligne</text>
+
+      {/* Message 1 (Incoming from Bot) */}
+      <g className="anim-msg-1">
+        <path d="M130 120h110c6 0 10 4 10 10v20c0 6-4 10-10 10H140c-6 0-10-4-10-10v-30z" fill="#FFFFFF" />
+        <path d="M130 120l-4 8h4v-8z" fill="#FFFFFF" />
+        <text x="138" y="134" fill="#173325" fontSize="8" fontWeight="bold" fontFamily="sans-serif">Mifia Egoto! (Mina)</text>
+        <text x="138" y="145" fill="rgba(23, 51, 37, 0.7)" fontSize="7" fontFamily="sans-serif">Cotisation : 5000 F ?</text>
+      </g>
+
+      {/* Message 2 (Outgoing from User) */}
+      <g className="anim-msg-2">
+        <path d="M150 170h110c6 0 10 4 10 10v20c0 6-4 10-10 10H160c-6 0-10-4-10-10v-30z" fill="#DCF8C6" /> {/* WhatsApp light green msg */}
+        <path d="M260 170l4 8h-4v-8z" fill="#DCF8C6" />
+        <text x="158" y="184" fill="#173325" fontSize="8" fontWeight="bold" fontFamily="sans-serif">Oui, je valide</text>
+        <text x="158" y="195" fill="rgba(23, 51, 37, 0.7)" fontSize="7" fontFamily="sans-serif">Par Moov Money</text>
+      </g>
+
+      {/* Message 3 (Incoming response from Bot) */}
+      <g className="anim-msg-3">
+        <path d="M130 220h110c6 0 10 4 10 10v22c0 6-4 10-10 10H140c-6 0-10-4-10-10v-32z" fill="#FFFFFF" />
+        <path d="M130 220l-4 8h4v-8z" fill="#FFFFFF" />
+        <text x="138" y="234" fill="#22C55E" fontSize="8" fontWeight="bold" fontFamily="sans-serif">✓ Validé !</text>
+        <text x="138" y="245" fill="#173325" fontSize="8" fontFamily="sans-serif">Score: 612 pts (+12)</text>
+      </g>
+      
+      {/* Language badges inside screen */}
+      <rect x="132" y="295" width="36" height="14" rx="7" fill="rgba(7, 94, 84, 0.15)" />
+      <text x="150" y="305" textAnchor="middle" fill="#075E54" fontSize="7" fontWeight="bold" fontFamily="sans-serif">MINA</text>
+      
+      <rect x="174" y="295" width="36" height="14" rx="7" fill="rgba(7, 94, 84, 0.15)" />
+      <text x="192" y="305" textAnchor="middle" fill="#075E54" fontSize="7" fontWeight="bold" fontFamily="sans-serif">EWÉ</text>
+      
+      <rect x="216" y="295" width="40" height="14" rx="7" fill="rgba(7, 94, 84, 0.15)" />
+      <text x="236" y="305" textAnchor="middle" fill="#075E54" fontSize="7" fontWeight="bold" fontFamily="sans-serif">KABYÈ</text>
     </g>
   </svg>
 );

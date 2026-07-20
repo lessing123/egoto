@@ -1,6 +1,12 @@
 import React from "react";
 import { Pill, PrimaryButton, GhostButton, Eyebrow } from "./ui";
-import { SavingsIllustration, CircleIllustration, ScoreIllustration } from "./Illustrations";
+import {
+  SavingsIllustration,
+  CircleIllustration,
+  ScoreGaugeIllustration,
+  VisaCardIllustration,
+  WhatsAppBotIllustration
+} from "./Illustrations";
 
 const getIllustration = (id) => {
   switch (id) {
@@ -9,8 +15,11 @@ const getIllustration = (id) => {
     case "epargne":
       return <SavingsIllustration />;
     case "score":
+      return <ScoreGaugeIllustration />;
     case "carte":
-      return <ScoreIllustration />;
+      return <VisaCardIllustration />;
+    case "whatsapp":
+      return <WhatsAppBotIllustration />;
     default:
       return null;
   }
