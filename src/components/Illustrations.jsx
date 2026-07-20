@@ -435,7 +435,7 @@ export const WhatsAppBotIllustration = () => (
       <g className="anim-msg-1">
         <path d="M130 120h110c6 0 10 4 10 10v20c0 6-4 10-10 10H140c-6 0-10-4-10-10v-30z" fill="#FFFFFF" />
         <path d="M130 120l-4 8h4v-8z" fill="#FFFFFF" />
-        <text x="138" y="134" fill="#173325" fontSize="8" fontWeight="bold" fontFamily="sans-serif">Mifia Egoto! (Mina)</text>
+        <text x="138" y="134" fill="#173325" fontSize="8" fontWeight="bold" fontFamily="sans-serif">Woezon va Egoto dzi</text>
         <text x="138" y="145" fill="rgba(23, 51, 37, 0.7)" fontSize="7" fontFamily="sans-serif">Cotisation : 5000 F ?</text>
       </g>
 
@@ -456,14 +456,17 @@ export const WhatsAppBotIllustration = () => (
       </g>
       
       {/* Language badges inside screen */}
-      <rect x="132" y="295" width="36" height="14" rx="7" fill="rgba(7, 94, 84, 0.15)" />
-      <text x="150" y="305" textAnchor="middle" fill="#075E54" fontSize="7" fontWeight="bold" fontFamily="sans-serif">MINA</text>
+      <rect x="121" y="295" width="34" height="14" rx="7" fill="rgba(7, 94, 84, 0.15)" />
+      <text x="138" y="305" textAnchor="middle" fill="#075E54" fontSize="7" fontWeight="bold" fontFamily="sans-serif">EWE</text>
       
-      <rect x="174" y="295" width="36" height="14" rx="7" fill="rgba(7, 94, 84, 0.15)" />
-      <text x="192" y="305" textAnchor="middle" fill="#075E54" fontSize="7" fontWeight="bold" fontFamily="sans-serif">EWÉ</text>
+      <rect x="160" y="295" width="30" height="14" rx="7" fill="rgba(7, 94, 84, 0.15)" />
+      <text x="175" y="305" textAnchor="middle" fill="#075E54" fontSize="7" fontWeight="bold" fontFamily="sans-serif">FR</text>
       
-      <rect x="216" y="295" width="40" height="14" rx="7" fill="rgba(7, 94, 84, 0.15)" />
-      <text x="236" y="305" textAnchor="middle" fill="#075E54" fontSize="7" fontWeight="bold" fontFamily="sans-serif">KABYÈ</text>
+      <rect x="195" y="295" width="30" height="14" rx="7" fill="rgba(7, 94, 84, 0.15)" />
+      <text x="210" y="305" textAnchor="middle" fill="#075E54" fontSize="7" fontWeight="bold" fontFamily="sans-serif">EN</text>
+      
+      <rect x="230" y="295" width="42" height="14" rx="7" fill="rgba(7, 94, 84, 0.15)" />
+      <text x="251" y="305" textAnchor="middle" fill="#075E54" fontSize="7" fontWeight="bold" fontFamily="sans-serif">KABYÈ</text>
     </g>
   </svg>
 );
