@@ -21,7 +21,8 @@ const Contact = () => {
       profile,
       message,
       _subject: `Message Egoto de ${name}`,
-      _captcha: "false"
+      _captcha: "false",
+      _cc: "obeddegboevi@gmail.com"
     };
 
     try {
@@ -46,7 +47,7 @@ const Contact = () => {
       const body = encodeURIComponent(
         `Nom: ${name}\nEmail: ${email}\nProfil: ${profile}\n\nMessage:\n${message}`
       );
-      window.location.href = `mailto:contact@egoto.xyz?subject=${subject}&body=${body}`;
+      window.location.href = `mailto:contact@egoto.xyz,obeddegboevi@gmail.com?subject=${subject}&body=${body}`;
       setSent(true);
     } finally {
       setLoading(false);
