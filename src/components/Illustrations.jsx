@@ -477,7 +477,7 @@ export const ProblemIllustration = () => (
     viewBox="0 0 400 400"
     width="100%"
     height="100%"
-    className="max-w-[340px] mx-auto overflow-visible"
+    className="w-full max-w-[580px] mx-auto overflow-visible"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >

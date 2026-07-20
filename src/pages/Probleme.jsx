@@ -16,13 +16,13 @@ const Probleme = () => {
 
       <section className="max-w-[1400px] mx-auto px-6 sm:px-10 pb-24">
         <SectionHeading eyebrow="Réalités du marché" title="Cinq constats simples." />
-        <div className="grid md:grid-cols-[1fr_340px] gap-12 items-center mt-10">
-          <div className="max-w-3xl">
+        <div className="grid md:grid-cols-[1.2fr_2.8fr] gap-12 items-center mt-10">
+          <div className="w-full">
             {marketRealities.map((r) => (
               <RealityRow key={r.title} {...r} />
             ))}
           </div>
-          <div className="flex justify-center items-center select-none shrink-0">
+          <div className="flex justify-center items-center select-none w-full">
             <ProblemIllustration />
           </div>
         </div>
