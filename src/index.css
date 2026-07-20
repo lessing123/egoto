@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --wax-pattern: radial-gradient(circle at 1px 1px, rgba(23, 51, 37, 0.04) 1px, transparent 0);
+  --wax-pattern: radial-gradient(circle at 1px 1px, rgba(20, 43, 32, 0.05) 1px, transparent 0);
 }
 
 * {
@@ -12,31 +12,31 @@
 
 html,
 body {
-  background: #FFFFFF;
+  background: #FAF9F6;
 }
 
 body {
   font-family: "Manrope", sans-serif;
-  color: #173325;
+  color: #142B20;
 }
 
 ::selection {
-  background: #173325;
-  color: #FFFFFF;
+  background: #C59B27;
+  color: #FAF9F6;
 }
 
 ::-webkit-scrollbar {
   width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #FFFFFF;
+  background: #FAF9F6;
 }
 ::-webkit-scrollbar-thumb {
-  background: #173325;
+  background: #2D5F4D;
   border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #0f1d1a;
+  background: #142B20;
 }
 
 .font-display {
@@ -49,7 +49,7 @@ body {
 }
 
 .text-gradient-gold {
-  background: linear-gradient(120deg, #2d5f4d 0%, #173325 55%, #2d5f4d 100%);
+  background: linear-gradient(120deg, #2D5F4D 0%, #142B20 55%, #2D5F4D 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -58,12 +58,12 @@ body {
 .knot-divider {
   position: relative;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(23, 51, 37, 0.15), transparent);
+  background: linear-gradient(90deg, transparent, rgba(20, 43, 32, 0.08), transparent);
 }
 
 .card-surface {
-  background: linear-gradient(160deg, rgba(23, 51, 37, 0.05) 0%, rgba(23, 51, 37, 0.02) 100%);
-  border: 1px solid rgba(23, 51, 37, 0.1);
+  background: linear-gradient(160deg, rgba(20, 43, 32, 0.04) 0%, rgba(20, 43, 32, 0.01) 100%);
+  border: 1px solid rgba(20, 43, 32, 0.07);
 }
 
 /* Bubble text shadow for better readability */

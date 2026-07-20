@@ -5,19 +5,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        ink: "#FFFFFF",
-        "ink-soft": "#F9F9F9",
-        "ink-line": "rgba(0, 0, 0, 0.06)",
-        paper: "#173325",
-        "paper-dim": "rgba(23, 51, 37, 0.8)",
-        gold: "#173325",
-        "gold-deep": "#0f1d1a",
-        terracotta: "#FBBF24",
-        palm: "#173325",
-        "palm-light": "#2d5f4d",
-        "palm-deep": "#0f1d1a",
-        paper: "#173325",
-        "paper-dim": "rgba(23, 51, 37, 0.8)",
+        ink: "#FAF9F6",                 // Premium soft Alabaster cream background
+        "ink-soft": "#F2EFE9",            // Warm sand card background
+        "ink-line": "rgba(20, 43, 32, 0.08)", // Subtle forest-tinted border line
+        paper: "#142B20",               // Soft deep forest green primary text
+        "paper-dim": "rgba(20, 43, 32, 0.75)", // Faded forest green text
+        gold: "#142B20",                // Primary green button background
+        "gold-deep": "#0B1B13",          // Darker green button hover background
+        terracotta: "#C59B27",          // Premium satin champagne gold accent
+        palm: "#142B20",                // Primary brand forest green
+        "palm-light": "#2D5F4D",        // Medium moss green
+        "palm-deep": "#0B1B13",         // Deep brand green background
       },
       fontFamily: {
         display: ["'Fraunces'", "serif"],

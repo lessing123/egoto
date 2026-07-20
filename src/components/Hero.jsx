@@ -77,38 +77,38 @@ const PhoneMock = () => (
     <div className="absolute -inset-6 bg-gold/10 rounded-[3rem] blur-3xl -z-10" />
     <div className="rounded-[2.5rem] border-2 border-ink-line bg-ink shadow-2xl overflow-hidden">
       <div className="bg-palm px-5 py-4 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-full bg-terracotta flex items-center justify-center font-display font-bold text-ink text-sm">
+        <div className="w-9 h-9 rounded-full bg-terracotta flex items-center justify-center font-display font-bold text-paper text-sm">
           Eg
         </div>
         <div>
-          <p className="font-body font-bold text-ink text-sm">Cercle Egoto - Adawlato</p>
-          <p className="font-body text-ink/70 text-[11px]">12 membres · en ligne</p>
+          <p className="font-body font-bold text-paper text-sm">Cercle Egoto - Adawlato</p>
+          <p className="font-body text-paper/70 text-[11px]">12 membres · en ligne</p>
         </div>
       </div>
       <div className="p-4 flex flex-col gap-3 min-h-[360px] bg-ink">
         <div className="self-start bg-ink-soft text-paper text-xs font-body rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[80%] flex items-center gap-2">
-          <CheckIcon className="text-gold" />
+          <CheckIcon className="text-terracotta" />
           Bonjour ! Votre cotisation de 5 000 FCFA a bien été collectée.
         </div>
         <div className="self-start bg-ink-soft text-paper text-xs font-body rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[80%]">
           Tour n°4 : c'est au tour de <strong className="text-paper">Da Adjo</strong> de recevoir la cagnotte.
         </div>
-        <div className="self-end bg-gradient-to-br from-gold-deep to-gold/80 text-ink text-xs font-body font-semibold rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[70%] flex items-center gap-2 shadow-2xl ring-2 ring-gold-deep/40 filter saturate-110 bubble-text-shadow">
+        <div className="self-end bg-gradient-to-br from-terracotta to-terracotta/80 text-ink text-xs font-body font-semibold rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[70%] flex items-center gap-2 shadow-2xl ring-2 ring-terracotta/40 filter saturate-110 bubble-text-shadow">
           <ChartIcon className="text-ink" />
           Merci ! Mon Score Egoto a augmenté ?
         </div>
         <div className="self-start bg-ink-soft text-paper text-xs font-body rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[80%] flex items-center gap-2">
-          <SparkleIcon className="text-gold" />
+          <SparkleIcon className="text-terracotta" />
           Oui : <strong className="text-terracotta">612 pts</strong> - vous débloquez la Carte Gold.
         </div>
 
         <div className="mt-auto card-surface rounded-2xl p-4">
           <div className="flex justify-between items-center mb-2">
             <span className="font-body text-[11px] text-paper-dim uppercase tracking-wide">Score Egoto</span>
-            <span className="font-display font-bold text-gold text-sm">612 / 1000</span>
+            <span className="font-display font-bold text-terracotta text-sm">612 / 1000</span>
           </div>
           <div className="h-2 rounded-full bg-ink-line overflow-hidden">
-            <div className="h-full score-fill bg-gradient-to-r from-terracotta to-gold" style={{ width: "61%" }} />
+            <div className="h-full score-fill bg-gradient-to-r from-terracotta to-palm" style={{ width: "61%" }} />
           </div>
         </div>
       </div>
@@ -119,7 +119,7 @@ const PhoneMock = () => (
       <p className="font-display text-ink text-lg mt-3 tracking-widest">•••• 4471</p>
       <div className="flex justify-between items-end mt-4">
         <span className="font-body text-ink/70 text-[10px]">Da Adjo</span>
-        <span className="font-display italic text-gold font-semibold text-sm">VISA</span>
+        <span className="font-display italic text-terracotta font-semibold text-sm">VISA</span>
       </div>
     </div>
   </div>
@@ -200,15 +200,15 @@ const Hero = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-12 font-body text-sm text-paper-dim">
             <div className="flex items-center gap-2">
-              <ChatBubbleIcon className="text-gold" />
+              <ChatBubbleIcon className="text-terracotta" />
               <span>Bot WhatsApp FR/EN</span>
             </div>
             <div className="flex items-center gap-2">
-              <MobileAppIcon className="text-gold" />
+              <MobileAppIcon className="text-terracotta" />
               <span>App Android & iOS</span>
             </div>
             <div className="flex items-center gap-2">
-              <UssdIcon className="text-gold" />
+              <UssdIcon className="text-terracotta" />
               <span>USSD sans smartphone</span>
             </div>
           </div>
