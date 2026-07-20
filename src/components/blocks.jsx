@@ -28,11 +28,11 @@ const getIllustration = (id) => {
 
 export const StatBand = ({ stats }) => (
   <section className="relative border-y border-ink-line bg-ink-soft/60">
-    <div className="max-w-[1400px] mx-auto px-6 sm:px-10 py-16 grid grid-cols-2 md:grid-cols-4 gap-8">
+    <div className="max-w-[1400px] mx-auto px-6 sm:px-10 py-20 grid grid-cols-2 md:grid-cols-4 gap-8">
       {stats.map((s, i) => (
         <div key={i} className="text-center md:text-left">
-          <p className="font-display font-bold text-4xl sm:text-5xl lg:text-6xl text-gold">{s.value}</p>
-          <p className="font-body text-paper-dim text-base sm:text-base lg:text-lg mt-3 leading-relaxed">{s.label}</p>
+          <p className="font-display font-bold text-5xl sm:text-6xl lg:text-7xl xl:text-8xl text-gold tracking-tight">{s.value}</p>
+          <p className="font-body text-paper/85 text-lg sm:text-lg lg:text-xl mt-4 leading-relaxed font-medium">{s.label}</p>
         </div>
       ))}
     </div>
