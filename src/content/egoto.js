@@ -1,5 +1,5 @@
 export const stats = [
-  { value: "3M+", label: "participants aux tontines informelles au Togo" },
+  { value: "+3M", label: "participants aux tontines informelles au Togo" },
   { value: "70%", label: "de la population togolaise hors du système bancaire" },
   { value: "9/10", label: "demandes de crédit refusées faute d'historique reconnu" },
   { value: "35K", label: "utilisateurs actifs visés à 18 mois" },
