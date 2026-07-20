@@ -5,7 +5,8 @@ import {
   CircleIllustration,
   ScoreGaugeIllustration,
   VisaCardIllustration,
-  WhatsAppBotIllustration
+  WhatsAppBotIllustration,
+  ContactIllustration
 } from "./Illustrations";
 
 const getIllustration = (id) => {
@@ -125,18 +126,41 @@ export const ScoreLadder = ({ tiers }) => (
   </div>
 );
 
+const getStepIllustration = (index) => {
+  switch (index) {
+    case 0:
+      return <CircleIllustration />;
+    case 1:
+      return <WhatsAppBotIllustration />;
+    case 2:
+      return <ScoreGaugeIllustration />;
+    case 3:
+      return <VisaCardIllustration />;
+    default:
+      return null;
+  }
+};
+
 export const JourneySteps = ({ steps }) => (
-  <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
-    {steps.map((s, i) => (
-      <div key={i} className="relative">
-        <span className="font-display italic text-6xl text-ink-line">{s.step}</span>
-        <h4 className="font-display font-semibold text-paper text-lg -mt-3">{s.title}</h4>
-        <p className="font-body text-paper-dim text-sm mt-2 leading-relaxed">{s.text}</p>
-        {i < steps.length - 1 && (
-          <span className="hidden md:block absolute top-6 -right-4 text-gold/40 text-2xl">→</span>
-        )}
-      </div>
-    ))}
+  <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8">
+    {steps.map((s, i) => {
+      const illustration = getStepIllustration(i);
+      return (
+        <div key={i} className="relative flex flex-col items-center text-center">
+          {illustration && (
+            <div className="w-32 h-32 flex justify-center items-center mb-2 select-none">
+              {illustration}
+            </div>
+          )}
+          <span className="font-display italic text-5xl text-ink-line">{s.step}</span>
+          <h4 className="font-display font-semibold text-paper text-lg mt-2">{s.title}</h4>
+          <p className="font-body text-paper-dim text-sm mt-2 leading-relaxed">{s.text}</p>
+          {i < steps.length - 1 && (
+            <span className="hidden md:block absolute top-[110px] -right-4 text-gold/40 text-2xl">→</span>
+          )}
+        </div>
+      );
+    })}
   </div>
 );
 
@@ -307,6 +331,9 @@ export const CTASection = () => (
     <div className="absolute inset-0 wax-dots opacity-30" />
     <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
     <div className="relative max-w-3xl mx-auto px-6 text-center">
+      <div className="flex justify-center items-center mb-6 select-none max-w-[120px] mx-auto">
+        <ContactIllustration />
+      </div>
       <Eyebrow>Prêt à tester</Eyebrow>
       <h2 className="font-display font-semibold text-3xl sm:text-4xl text-paper leading-tight">
         Rejoins la liste d'attente de l'application Egoto.
