@@ -1,24 +1,27 @@
 import React from "react";
 import { PageHero } from "../components/ui";
 import { TeamIllustration } from "../components/Illustrations";
+import { useLanguage } from "../context/LanguageContext";
 
 const Equipe = () => {
+  const { language, t } = useLanguage();
+
   const members = [
     {
       name: "Gogoyi Priscille",
-      title: "Growth & Conformité",
+      title: language === "fr" ? "Growth & Conformité" : "Growth & Compliance",
       phone: "+22870927990",
       label: "+228 70 92 79 90",
     },
     {
       name: "Degboevi Obed",
-      title: "Lead Produit & Tech",
+      title: language === "fr" ? "Lead Produit & Tech" : "Product & Tech Lead",
       phone: "+22892693362",
       label: "+228 92 69 33 62",
     },
     {
       name: "Tairou Achiraf",
-      title: "Lead Engineering & Intégrations",
+      title: language === "fr" ? "Lead Engineering & Intégrations" : "Engineering & Integrations Lead",
       phone: "+22893871963",
       label: "+228 93 87 19 63",
     },
@@ -26,7 +29,10 @@ const Equipe = () => {
 
   return (
     <>
-      <PageHero eyebrow="Équipe" title="Les personnes derrière Egoto" />
+      <PageHero
+        eyebrow={t("team.hero.eyebrow")}
+        title={t("team.hero.title")}
+      />
 
       <section className="max-w-5xl mx-auto px-6 sm:px-10 py-24">
         <div className="grid md:grid-cols-[1fr_340px] gap-12 items-center">
@@ -45,7 +51,7 @@ const Equipe = () => {
                     className="inline-flex items-center gap-2 rounded-full border border-ink-line bg-white/80 px-4 py-2 text-sm font-body text-paper-dim transition-colors hover:border-gold hover:text-gold"
                   >
                     <img src="/whatsapp.svg" alt="WhatsApp" className="w-4 h-4" />
-                    <span>{m.label}</span>
+                    <span>{t("team.cta.write")} — {m.label}</span>
                   </a>
                 </div>
               </div>

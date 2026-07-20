@@ -1,28 +1,31 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Logo from "./Logo";
-
-const columns = [
-  {
-    title: "Produit",
-    links: [
-      { to: "/solution#tontines", label: "Tontines digitales" },
-      { to: "/solution#epargne", label: "Épargne individuelle" },
-      { to: "/solution#score", label: "Score Egoto" },
-      { to: "/telecharger", label: "Télécharger" },
-    ],
-  },
-  {
-    title: "Ressources",
-    links: [
-      { to: "/probleme", label: "Pourquoi Egoto" },
-      { to: "/contact", label: "Contact" },
-      { to: "/", label: "Accueil" },
-    ],
-  },
-];
+import { useLanguage } from "../context/LanguageContext";
 
 const Footer = () => {
+  const { t, language } = useLanguage();
+
+  const columns = [
+    {
+      title: language === "fr" ? "Produit" : "Product",
+      links: [
+        { to: "/solution#tontines", label: language === "fr" ? "Tontines digitales" : "Digital Tontines" },
+        { to: "/solution#epargne", label: language === "fr" ? "Épargne individuelle" : "Individual Savings" },
+        { to: "/solution#score", label: "Score Egoto" },
+        { to: "/telecharger", label: t("nav.download") },
+      ],
+    },
+    {
+      title: language === "fr" ? "Ressources" : "Resources",
+      links: [
+        { to: "/probleme", label: t("nav.why") },
+        { to: "/contact", label: t("nav.contact") },
+        { to: "/", label: language === "fr" ? "Accueil" : "Home" },
+      ],
+    },
+  ];
+
   return (
     <footer className="bg-ink-soft border-t border-ink-line">
       <div className="max-w-[1400px] mx-auto px-6 sm:px-10 py-16">
@@ -30,8 +33,7 @@ const Footer = () => {
           <div className="max-w-xs">
             <Logo />
             <p className="font-body text-paper-dim text-sm mt-4 leading-relaxed">
-              L'épargne togolaise digitalisée : tontines, épargne individuelle et score financier
-              accessibles depuis ton mobile, WhatsApp et USSD.
+              {t("footer.desc")}
             </p>
           </div>
 
@@ -56,7 +58,7 @@ const Footer = () => {
 
             {/* Contact column */}
             <div>
-              <h4 className="font-display text-paper text-base mb-4">Contact</h4>
+              <h4 className="font-display text-paper text-base mb-4">{t("footer.title.contact")}</h4>
               <ul className="flex flex-col gap-3">
                 <li>
                   <a href="mailto:contact@egoto.xyz" className="font-body text-sm text-paper-dim hover:text-terracotta transition-colors">
@@ -65,7 +67,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a href="mailto:prisille.gogoyi@egoto.xyz" className="font-body text-sm text-paper-dim hover:text-terracotta transition-colors">
-                    Partenariats
+                    {t("footer.partnerships")}
                   </a>
                 </li>
                 <li>
@@ -81,11 +83,11 @@ const Footer = () => {
         <div className="knot-divider my-10" />
 
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-body text-paper-dim/70">
-          <p>© {new Date().getFullYear()} Egoto — Tous droits réservés</p>
+          <p>© {new Date().getFullYear()} Egoto — {t("footer.rights")}</p>
           <div className="flex items-center gap-4">
             <a href="mailto:contact@egoto.xyz" className="hover:text-terracotta transition-colors">contact@egoto.xyz</a>
             <span className="hidden sm:inline">·</span>
-            <span className="hidden sm:inline">Pilote mobile, WhatsApp et USSD</span>
+            <span className="hidden sm:inline">{language === "fr" ? "Pilote mobile, WhatsApp et USSD" : "Mobile, WhatsApp and USSD pilot"}</span>
           </div>
         </div>
       </div>

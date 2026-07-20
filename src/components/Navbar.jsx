@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, Link } from "react-router-dom";
 import Logo from "./Logo";
-
-const links = [
-  { to: "/probleme", label: "Pourquoi Egoto" },
-  { to: "/solution", label: "Fonctionnalités" },
-  { to: "/equipe", label: "Équipe" },
-  { to: "/telecharger", label: "Télécharger" },
-  { to: "/contact", label: "Contact" },
-];
+import { useLanguage } from "../context/LanguageContext";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { language, toggleLanguage, t } = useLanguage();
+
+  const links = [
+    { to: "/probleme", label: t("nav.why") },
+    { to: "/solution", label: t("nav.features") },
+    { to: "/equipe", label: t("nav.team") },
+    { to: "/telecharger", label: t("nav.download") },
+    { to: "/contact", label: t("nav.contact") },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -48,30 +50,51 @@ const Navbar = () => {
           ))}
         </ul>
 
-        <Link
-          to="/contact"
-          className="hidden md:inline-flex items-center gap-2 bg-gold hover:bg-gold-deep text-ink font-body font-bold text-sm px-5 py-2.5 rounded-full transition-colors"
-        >
-          Je veux l'app
-        </Link>
+        <div className="hidden md:flex items-center gap-4">
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-ink-line text-paper-dim hover:text-gold hover:border-gold transition-colors font-body text-xs font-semibold uppercase tracking-wider bg-ink-soft/40"
+            title={language === "fr" ? "Switch to English" : "Passer en Français"}
+          >
+            <span>🌐</span>
+            <span>{language === "fr" ? "EN" : "FR"}</span>
+          </button>
+          
+          <Link
+            to="/contact"
+            className="inline-flex items-center gap-2 bg-gold hover:bg-gold-deep text-ink font-body font-bold text-sm px-5 py-2.5 rounded-full transition-colors"
+          >
+            {t("btn.getApp")}
+          </Link>
+        </div>
 
-        <button
-          className="md:hidden w-9 h-9 flex flex-col justify-center items-center gap-1.5"
-          onClick={() => setOpen(!open)}
-          aria-label="Menu"
-        >
-          <span
-            className={`block h-0.5 w-6 bg-paper transition-transform ${
-              open ? "rotate-45 translate-y-2" : ""
-            }`}
-          />
-          <span className={`block h-0.5 w-6 bg-paper transition-opacity ${open ? "opacity-0" : ""}`} />
-          <span
-            className={`block h-0.5 w-6 bg-paper transition-transform ${
-              open ? "-rotate-45 -translate-y-2" : ""
-            }`}
-          />
-        </button>
+        <div className="flex items-center gap-4 md:hidden">
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-ink-line text-paper-dim hover:text-gold transition-colors font-body text-xs font-semibold uppercase bg-ink-soft/40"
+          >
+            <span>🌐</span>
+            <span>{language === "fr" ? "EN" : "FR"}</span>
+          </button>
+          
+          <button
+            className="w-9 h-9 flex flex-col justify-center items-center gap-1.5"
+            onClick={() => setOpen(!open)}
+            aria-label="Menu"
+          >
+            <span
+              className={`block h-0.5 w-6 bg-paper transition-transform ${
+                open ? "rotate-45 translate-y-2" : ""
+              }`}
+            />
+            <span className={`block h-0.5 w-6 bg-paper transition-opacity ${open ? "opacity-0" : ""}`} />
+            <span
+              className={`block h-0.5 w-6 bg-paper transition-transform ${
+                open ? "-rotate-45 -translate-y-2" : ""
+              }`}
+            />
+          </button>
+        </div>
       </nav>
 
       {open && (
@@ -88,13 +111,26 @@ const Navbar = () => {
                 </NavLink>
               </li>
             ))}
-            <li>
+            <li className="pt-2 border-t border-ink-line flex justify-between items-center">
+              <span className="font-body text-sm text-paper-dim uppercase tracking-wider">Langue / Language</span>
+              <button
+                onClick={() => {
+                  toggleLanguage();
+                  setOpen(false);
+                }}
+                className="flex items-center gap-2 px-4 py-2 rounded-full border border-ink-line text-paper font-bold text-sm bg-ink"
+              >
+                <span>🌐</span>
+                <span>{language === "fr" ? "English" : "Français"}</span>
+              </button>
+            </li>
+            <li className="mt-2">
               <Link
                 to="/contact"
                 onClick={() => setOpen(false)}
-                className="inline-flex bg-gold text-ink font-bold px-5 py-2.5 rounded-full"
+                className="inline-flex w-full justify-center bg-gold text-ink font-bold px-5 py-2.5 rounded-full"
               >
-                Rejoindre le pilote
+                {t("btn.joinPilot")}
               </Link>
             </li>
           </ul>

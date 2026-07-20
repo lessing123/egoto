@@ -1,6 +1,7 @@
 import React from "react";
 import { Eyebrow, PrimaryButton, GhostButton } from "./ui";
 import { ChatBubbleIcon, MobileAppIcon, UssdIcon, CheckIcon, ChartIcon, SparkleIcon } from "./Icons";
+import { useLanguage } from "../context/LanguageContext";
 
 const MoneyChip = ({ className = "", children, tone = "gold", style }) => {
   const tones = {
@@ -94,58 +95,69 @@ const DigitalMoneyFlow = () => (
   </div>
 );
 
-const PhoneMock = () => (
-  <div className="relative w-full max-w-[340px] mx-auto animate-float-slow">
-    <div className="absolute -inset-6 bg-gold/10 rounded-[3rem] blur-3xl -z-10" />
-    <div className="rounded-[2.5rem] border-2 border-ink-line bg-ink shadow-2xl overflow-hidden">
-      <div className="bg-palm px-5 py-4 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-full bg-terracotta flex items-center justify-center font-display font-bold text-paper text-sm">
-          Eg
+const PhoneMock = () => {
+  const { language } = useLanguage();
+  return (
+    <div className="relative w-full max-w-[340px] mx-auto animate-float-slow">
+      <div className="absolute -inset-6 bg-gold/10 rounded-[3rem] blur-3xl -z-10" />
+      <div className="rounded-[2.5rem] border-2 border-ink-line bg-ink shadow-2xl overflow-hidden">
+        <div className="bg-palm px-5 py-4 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-terracotta flex items-center justify-center font-display font-bold text-paper text-sm">
+            Eg
+          </div>
+          <div>
+            <p className="font-body font-bold text-paper text-sm">{language === "fr" ? "Cercle Egoto - Adawlato" : "Egoto Circle - Adawlato"}</p>
+            <p className="font-body text-paper/70 text-[11px]">{language === "fr" ? "12 membres · en ligne" : "12 members · online"}</p>
+          </div>
         </div>
-        <div>
-          <p className="font-body font-bold text-paper text-sm">Cercle Egoto - Adawlato</p>
-          <p className="font-body text-paper/70 text-[11px]">12 membres · en ligne</p>
+        <div className="p-4 flex flex-col gap-3 min-h-[360px] bg-ink">
+          <div className="self-start bg-ink-soft text-paper text-xs font-body rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[80%] flex items-center gap-2">
+            <CheckIcon className="text-terracotta" />
+            {language === "fr" ? "Bonjour ! Votre cotisation de 5 000 FCFA a bien été collectée." : "Hello! Your 5,000 FCFA contribution has been successfully collected."}
+          </div>
+          <div className="self-start bg-ink-soft text-paper text-xs font-body rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[80%]">
+            {language === "fr" ? (
+              <>Tour n°4 : c'est au tour de <strong className="text-paper">Da Adjo</strong> de recevoir la cagnotte.</>
+            ) : (
+              <>Turn #4: it is <strong className="text-paper">Da Adjo</strong>'s turn to receive the pot.</>
+            )}
+          </div>
+          <div className="self-end bg-gradient-to-br from-terracotta to-terracotta/80 text-ink text-xs font-body font-semibold rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[70%] flex items-center gap-2 shadow-2xl ring-2 ring-terracotta/40 filter saturate-110 bubble-text-shadow">
+            <ChartIcon className="text-ink" />
+            {language === "fr" ? "Merci ! Mon Score Egoto a augmenté ?" : "Thanks! Has my Egoto Score increased?"}
+          </div>
+          <div className="self-start bg-ink-soft text-paper text-xs font-body rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[80%] flex items-center gap-2">
+            <SparkleIcon className="text-terracotta" />
+            {language === "fr" ? (
+              <>Oui : <strong className="text-terracotta">612 pts</strong> - vous débloquez la Carte Gold.</>
+            ) : (
+              <>Yes: <strong className="text-terracotta">612 pts</strong> - you unlock the Gold Card.</>
+            )}
+          </div>
+
+          <div className="mt-auto card-surface rounded-2xl p-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="font-body text-[11px] text-paper-dim uppercase tracking-wide">Score Egoto</span>
+              <span className="font-display font-bold text-terracotta text-sm">612 / 1000</span>
+            </div>
+            <div className="h-2 rounded-full bg-ink-line overflow-hidden">
+              <div className="h-full score-fill bg-gradient-to-r from-terracotta to-palm" style={{ width: "61%" }} />
+            </div>
+          </div>
         </div>
       </div>
-      <div className="p-4 flex flex-col gap-3 min-h-[360px] bg-ink">
-        <div className="self-start bg-ink-soft text-paper text-xs font-body rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[80%] flex items-center gap-2">
-          <CheckIcon className="text-terracotta" />
-          Bonjour ! Votre cotisation de 5 000 FCFA a bien été collectée.
-        </div>
-        <div className="self-start bg-ink-soft text-paper text-xs font-body rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[80%]">
-          Tour n°4 : c'est au tour de <strong className="text-paper">Da Adjo</strong> de recevoir la cagnotte.
-        </div>
-        <div className="self-end bg-gradient-to-br from-terracotta to-terracotta/80 text-ink text-xs font-body font-semibold rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[70%] flex items-center gap-2 shadow-2xl ring-2 ring-terracotta/40 filter saturate-110 bubble-text-shadow">
-          <ChartIcon className="text-ink" />
-          Merci ! Mon Score Egoto a augmenté ?
-        </div>
-        <div className="self-start bg-ink-soft text-paper text-xs font-body rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[80%] flex items-center gap-2">
-          <SparkleIcon className="text-terracotta" />
-          Oui : <strong className="text-terracotta">612 pts</strong> - vous débloquez la Carte Gold.
-        </div>
 
-        <div className="mt-auto card-surface rounded-2xl p-4">
-          <div className="flex justify-between items-center mb-2">
-            <span className="font-body text-[11px] text-paper-dim uppercase tracking-wide">Score Egoto</span>
-            <span className="font-display font-bold text-terracotta text-sm">612 / 1000</span>
-          </div>
-          <div className="h-2 rounded-full bg-ink-line overflow-hidden">
-            <div className="h-full score-fill bg-gradient-to-r from-terracotta to-palm" style={{ width: "61%" }} />
-          </div>
+      <div className="absolute -bottom-8 -left-10 w-52 rounded-2xl bg-gradient-to-br from-palm to-palm-deep p-4 shadow-2xl border border-palm-light/30 rotate-[-6deg] hidden xs:block">
+        <p className="font-body text-[10px] text-ink/70 uppercase tracking-wider">{language === "fr" ? "Carte Egoto Gold" : "Egoto Gold Card"}</p>
+        <p className="font-display text-ink text-lg mt-3 tracking-widest">•••• 4471</p>
+        <div className="flex justify-between items-end mt-4">
+          <span className="font-body text-ink/70 text-[10px]">Da Adjo</span>
+          <span className="font-display italic text-terracotta font-semibold text-sm">VISA</span>
         </div>
       </div>
     </div>
-
-    <div className="absolute -bottom-8 -left-10 w-52 rounded-2xl bg-gradient-to-br from-palm to-palm-deep p-4 shadow-2xl border border-palm-light/30 rotate-[-6deg] hidden xs:block">
-      <p className="font-body text-[10px] text-ink/70 uppercase tracking-wider">Carte Egoto Gold</p>
-      <p className="font-display text-ink text-lg mt-3 tracking-widest">•••• 4471</p>
-      <div className="flex justify-between items-end mt-4">
-        <span className="font-body text-ink/70 text-[10px]">Da Adjo</span>
-        <span className="font-display italic text-terracotta font-semibold text-sm">VISA</span>
-      </div>
-    </div>
-  </div>
-);
+  );
+};
 
 {/* Official Emblems for Banknotes */}
 const BanknoteEmblem = ({ code }) => {
@@ -314,43 +326,56 @@ const FloatingCoinsBackground = () => {
 };
 
 const Hero = () => {
+  const { language } = useLanguage();
+
   return (
     <section className="relative overflow-hidden pt-14 pb-24 sm:pt-20">
       <div className="absolute inset-0 wax-dots opacity-30" />
       <div className="absolute -top-32 -left-20 w-96 h-96 bg-terracotta/20 rounded-full blur-[120px]" />
       <div className="absolute top-40 right-0 w-[28rem] h-[28rem] bg-palm/20 rounded-full blur-[130px]" />
       <FloatingCoinsBackground />
-
+ 
       <div className="relative max-w-[1400px] mx-auto px-6 sm:px-10 grid md:grid-cols-2 gap-14 items-center">
         <div className="animate-rise bg-ink/40 backdrop-blur-[2px] rounded-3xl p-4 sm:p-0">
-          <Eyebrow>Super-app fintech togolaise</Eyebrow>
+          <Eyebrow>{language === "fr" ? "Super-app fintech togolaise" : "Togolese fintech super-app"}</Eyebrow>
           <h1 className="font-display font-semibold text-[2.6rem] leading-[1.05] sm:text-6xl text-paper">
-            Ton argent,
-            <br />
-            <span className="text-gradient-gold italic">bien accompagné.</span>
+            {language === "fr" ? (
+              <>
+                Ton argent,
+                <br />
+                <span className="text-gradient-gold italic">bien accompagné.</span>
+              </>
+            ) : (
+              <>
+                Your money,
+                <br />
+                <span className="text-gradient-gold italic">well supported.</span>
+              </>
+            )}
           </h1>
           <p className="font-body text-paper-dim text-lg mt-6 max-w-lg leading-relaxed">
-            Egoto transforme la tontine en experience digitale claire, mobile et traçable,
-            du WhatsApp au score financier.
+            {language === "fr"
+              ? "Egoto transforme la tontine en experience digitale claire, mobile et traçable, du WhatsApp au score financier."
+              : "Egoto transforms the tontine into a clear, mobile, and traceable digital experience, from WhatsApp to the financial score."}
           </p>
-
+ 
           <div className="flex flex-wrap gap-4 mt-9">
-            <PrimaryButton to="/solution">Découvrir la solution</PrimaryButton>
-            <GhostButton to="/telecharger">Télécharger bientôt</GhostButton>
+            <PrimaryButton to="/solution">{language === "fr" ? "Découvrir la solution" : "Discover the solution"}</PrimaryButton>
+            <GhostButton to="/telecharger">{language === "fr" ? "Télécharger bientôt" : "Download soon"}</GhostButton>
           </div>
-
+ 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-12 font-body text-sm text-paper-dim">
             <div className="flex items-center gap-2">
               <ChatBubbleIcon className="text-terracotta" />
-              <span>Bot WhatsApp FR/EN</span>
+              <span>{language === "fr" ? "Bot WhatsApp FR/EN" : "WhatsApp Bot EN/FR"}</span>
             </div>
             <div className="flex items-center gap-2">
               <MobileAppIcon className="text-terracotta" />
-              <span>App Android & iOS</span>
+              <span>{language === "fr" ? "App Android & iOS" : "Android & iOS App"}</span>
             </div>
             <div className="flex items-center gap-2">
               <UssdIcon className="text-terracotta" />
-              <span>USSD sans smartphone</span>
+              <span>{language === "fr" ? "USSD sans smartphone" : "USSD without smartphone"}</span>
             </div>
           </div>
         </div>

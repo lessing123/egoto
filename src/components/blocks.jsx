@@ -1,5 +1,6 @@
 import React from "react";
 import { Pill, PrimaryButton, GhostButton, Eyebrow } from "./ui";
+import { useLanguage } from "../context/LanguageContext";
 import {
   SavingsIllustration,
   CircleIllustration,
@@ -172,55 +173,61 @@ export const SegmentCard = ({ title, desc, size }) => (
   </div>
 );
 
-export const PersonaCard = ({ persona }) => (
-  <div className="card-surface rounded-3xl p-8 sm:p-10 grid sm:grid-cols-[auto_1fr] gap-8 items-start">
-    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-terracotta to-gold flex items-center justify-center font-display font-bold text-2xl text-ink shrink-0">
-      {persona.name.split(" ").map((n) => n[0]).join("")}
+export const PersonaCard = ({ persona }) => {
+  const { language } = useLanguage();
+  return (
+    <div className="card-surface rounded-3xl p-8 sm:p-10 grid sm:grid-cols-[auto_1fr] gap-8 items-start">
+      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-terracotta to-gold flex items-center justify-center font-display font-bold text-2xl text-ink shrink-0">
+        {persona.name.split(" ").map((n) => n[0]).join("")}
+      </div>
+      <div>
+        <h3 className="font-display font-semibold text-2xl text-paper">
+          {persona.name}, {persona.age} {language === "fr" ? "ans" : "years old"}
+        </h3>
+        <p className="font-body text-terracotta text-sm font-bold mt-1">{persona.role}</p>
+        <ul className="mt-5 flex flex-col gap-2.5">
+          {persona.facts.map((f, i) => (
+            <li key={i} className="font-body text-sm text-paper/80 flex gap-2">
+              <span className="text-gold">-</span>
+              {f}
+            </li>
+          ))}
+        </ul>
+        <blockquote className="font-display italic text-lg text-gold mt-6 border-l-2 border-gold pl-4">
+          "{persona.quote}"
+        </blockquote>
+      </div>
     </div>
-    <div>
-      <h3 className="font-display font-semibold text-2xl text-paper">
-        {persona.name}, {persona.age} ans
-      </h3>
-      <p className="font-body text-terracotta text-sm font-bold mt-1">{persona.role}</p>
-      <ul className="mt-5 flex flex-col gap-2.5">
-        {persona.facts.map((f, i) => (
-          <li key={i} className="font-body text-sm text-paper/80 flex gap-2">
-            <span className="text-gold">-</span>
-            {f}
-          </li>
-        ))}
-      </ul>
-      <blockquote className="font-display italic text-lg text-gold mt-6 border-l-2 border-gold pl-4">
-        "{persona.quote}"
-      </blockquote>
-    </div>
-  </div>
-);
+  );
+};
 
-export const PositioningTable = ({ rows }) => (
-  <div className="overflow-x-auto rounded-2xl border border-ink-line">
-    <table className="w-full text-sm font-body min-w-[640px]">
-      <thead>
-        <tr className="bg-ink-soft text-left">
-          <th className="p-4 text-paper-dim font-semibold"> </th>
-          <th className="p-4 text-gold font-bold">Egoto</th>
-          <th className="p-4 text-paper-dim font-semibold">Banque traditionnelle</th>
-          <th className="p-4 text-paper-dim font-semibold">Mobile Money seul</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((r, i) => (
-          <tr key={i} className="border-t border-ink-line">
-            <td className="p-4 font-semibold text-paper">{r.label}</td>
-            <td className="p-4 text-gold">{r.egoto}</td>
-            <td className="p-4 text-paper-dim">{r.banque}</td>
-            <td className="p-4 text-paper-dim">{r.momo}</td>
+export const PositioningTable = ({ rows }) => {
+  const { language } = useLanguage();
+  return (
+    <div className="overflow-x-auto rounded-2xl border border-ink-line">
+      <table className="w-full text-sm font-body min-w-[640px]">
+        <thead>
+          <tr className="bg-ink-soft text-left">
+            <th className="p-4 text-paper-dim font-semibold"> </th>
+            <th className="p-4 text-gold font-bold">Egoto</th>
+            <th className="p-4 text-paper-dim font-semibold">{language === "fr" ? "Banque traditionnelle" : "Traditional Bank"}</th>
+            <th className="p-4 text-paper-dim font-semibold">{language === "fr" ? "Mobile Money seul" : "Mobile Money Only"}</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-);
+        </thead>
+        <tbody>
+          {rows.map((r, i) => (
+            <tr key={i} className="border-t border-ink-line">
+              <td className="p-4 font-semibold text-paper">{r.label}</td>
+              <td className="p-4 text-gold">{r.egoto}</td>
+              <td className="p-4 text-paper-dim">{r.banque}</td>
+              <td className="p-4 text-paper-dim">{r.momo}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 export const RevenueCard = ({ title, rate, text }) => (
   <div className="card-surface rounded-2xl p-7">
@@ -232,55 +239,61 @@ export const RevenueCard = ({ title, rate, text }) => (
   </div>
 );
 
-export const RevenueTable = ({ rows, totals }) => (
-  <div className="overflow-x-auto rounded-2xl border border-ink-line">
-    <table className="w-full text-sm font-body min-w-[560px]">
-      <thead>
-        <tr className="bg-ink-soft text-left">
-          <th className="p-4 text-paper-dim font-semibold">Source</th>
-          <th className="p-4 text-paper-dim font-semibold">Mois 6 (5K users)</th>
-          <th className="p-4 text-paper-dim font-semibold">Mois 12 (15K users)</th>
-          <th className="p-4 text-paper-dim font-semibold">Mois 18 (35K users)</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((r, i) => (
-          <tr key={i} className="border-t border-ink-line">
-            <td className="p-4 font-semibold text-paper">{r.source}</td>
-            <td className="p-4 text-paper-dim">{r.m6} FCFA</td>
-            <td className="p-4 text-paper-dim">{r.m12} FCFA</td>
-            <td className="p-4 text-paper-dim">{r.m18} FCFA</td>
+export const RevenueTable = ({ rows, totals }) => {
+  const { language } = useLanguage();
+  return (
+    <div className="overflow-x-auto rounded-2xl border border-ink-line">
+      <table className="w-full text-sm font-body min-w-[560px]">
+        <thead>
+          <tr className="bg-ink-soft text-left">
+            <th className="p-4 text-paper-dim font-semibold">Source</th>
+            <th className="p-4 text-paper-dim font-semibold">{language === "fr" ? "Mois 6" : "Month 6"} (5K users)</th>
+            <th className="p-4 text-paper-dim font-semibold">{language === "fr" ? "Mois 12" : "Month 12"} (15K users)</th>
+            <th className="p-4 text-paper-dim font-semibold">{language === "fr" ? "Mois 18" : "Month 18"} (35K users)</th>
           </tr>
-        ))}
-        <tr className="border-t border-gold/30 bg-gold/5">
-          <td className="p-4 font-display font-bold text-gold">Total mensuel</td>
-          <td className="p-4 font-display font-bold text-gold">{totals.m6} FCFA</td>
-          <td className="p-4 font-display font-bold text-gold">{totals.m12} FCFA</td>
-          <td className="p-4 font-display font-bold text-gold">{totals.m18} FCFA</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-);
-
-export const PhaseCard = ({ phase, index }) => (
-  <div className="card-surface rounded-3xl p-8 flex flex-col h-full">
-    <div className="flex justify-between items-start">
-      <Pill tone={index === 0 ? "gold" : index === 1 ? "terracotta" : "palm"}>{phase.tag}</Pill>
-      <span className="font-body text-paper-dim text-xs">{phase.period}</span>
+        </thead>
+        <tbody>
+          {rows.map((r, i) => (
+            <tr key={i} className="border-t border-ink-line">
+              <td className="p-4 font-semibold text-paper">{r.source}</td>
+              <td className="p-4 text-paper-dim">{r.m6} FCFA</td>
+              <td className="p-4 text-paper-dim">{r.m12} FCFA</td>
+              <td className="p-4 text-paper-dim">{r.m18} FCFA</td>
+            </tr>
+          ))}
+          <tr className="border-t border-gold/30 bg-gold/5">
+            <td className="p-4 font-display font-bold text-gold">{language === "fr" ? "Total mensuel" : "Monthly Total"}</td>
+            <td className="p-4 font-display font-bold text-gold">{totals.m6} FCFA</td>
+            <td className="p-4 font-display font-bold text-gold">{totals.m12} FCFA</td>
+            <td className="p-4 font-display font-bold text-gold">{totals.m18} FCFA</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    <h3 className="font-display font-semibold text-2xl text-paper mt-5">{phase.title}</h3>
-    <p className="font-display italic text-gold text-lg mt-1">Objectif : {phase.goal}</p>
-    <ul className="mt-5 flex flex-col gap-3 flex-1">
-      {phase.points.map((p, i) => (
-        <li key={i} className="font-body text-sm text-paper/80 flex gap-2.5">
-          <span className="text-gold mt-0.5">✓</span>
-          <span className="leading-relaxed">{p}</span>
-        </li>
-      ))}
-    </ul>
-  </div>
-);
+  );
+};
+
+export const PhaseCard = ({ phase, index }) => {
+  const { language } = useLanguage();
+  return (
+    <div className="card-surface rounded-3xl p-8 flex flex-col h-full">
+      <div className="flex justify-between items-start">
+        <Pill tone={index === 0 ? "gold" : index === 1 ? "terracotta" : "palm"}>{phase.tag}</Pill>
+        <span className="font-body text-paper-dim text-xs">{phase.period}</span>
+      </div>
+      <h3 className="font-display font-semibold text-2xl text-paper mt-5">{phase.title}</h3>
+      <p className="font-display italic text-gold text-lg mt-1">{language === "fr" ? "Objectif" : "Goal"} : {phase.goal}</p>
+      <ul className="mt-5 flex flex-col gap-3 flex-1">
+        {phase.points.map((p, i) => (
+          <li key={i} className="font-body text-sm text-paper/80 flex gap-2.5">
+            <span className="text-gold mt-0.5">✓</span>
+            <span className="leading-relaxed">{p}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 export const RoadmapTable = ({ rows }) => (
   <div className="flex flex-col">
@@ -310,7 +323,10 @@ export const TeamCard = ({ member }) => (
 );
 
 export const RiskCard = ({ risk }) => {
-  const levelTone = { Faible: "palm", Moyen: "gold", Élevé: "terracotta" };
+  const levelTone = { 
+    Faible: "palm", Moyen: "gold", Élevé: "terracotta",
+    Low: "palm", Medium: "gold", High: "terracotta"
+  };
   return (
     <div className="card-surface rounded-2xl p-6">
       <div className="flex justify-between items-start gap-3">
@@ -326,26 +342,28 @@ export const RiskCard = ({ risk }) => {
   );
 };
 
-export const CTASection = () => (
-  <section className="relative py-24 overflow-hidden">
-    <div className="absolute inset-0 wax-dots opacity-30" />
-    <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
-    <div className="relative max-w-3xl mx-auto px-6 text-center">
-      <div className="flex justify-center items-center mb-6 select-none max-w-[120px] mx-auto">
-        <ContactIllustration />
+export const CTASection = () => {
+  const { t } = useLanguage();
+  return (
+    <section className="relative py-24 overflow-hidden">
+      <div className="absolute inset-0 wax-dots opacity-30" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+      <div className="relative max-w-3xl mx-auto px-6 text-center">
+        <div className="flex justify-center items-center mb-6 select-none max-w-[120px] mx-auto">
+          <ContactIllustration />
+        </div>
+        <Eyebrow>{t("cta.eyebrow")}</Eyebrow>
+        <h2 className="font-display font-semibold text-3xl sm:text-4xl text-paper leading-tight">
+          {t("cta.title")}
+        </h2>
+        <p className="font-body text-paper-dim text-lg mt-5 leading-relaxed">
+          {t("cta.desc")}
+        </p>
+        <div className="flex flex-wrap justify-center gap-4 mt-9">
+          <PrimaryButton to="/contact">{t("btn.beInformed")}</PrimaryButton>
+          <GhostButton to="/telecharger">{t("download.soon.btn")}</GhostButton>
+        </div>
       </div>
-      <Eyebrow>Prêt à tester</Eyebrow>
-      <h2 className="font-display font-semibold text-3xl sm:text-4xl text-paper leading-tight">
-        Rejoins la liste d'attente de l'application Egoto.
-      </h2>
-      <p className="font-body text-paper-dim text-lg mt-5 leading-relaxed">
-        Sois informé(e) du lancement, découvre les fonctionnalités en avant-première et
-        préinscris-toi pour la version mobile.
-      </p>
-      <div className="flex flex-wrap justify-center gap-4 mt-9">
-        <PrimaryButton to="/contact">Je veux être informé(e)</PrimaryButton>
-        <GhostButton to="/telecharger">Télécharger bientôt</GhostButton>
-      </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};

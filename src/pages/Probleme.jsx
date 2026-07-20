@@ -4,14 +4,23 @@ import { ProblemCard, RealityRow, CTASection } from "../components/blocks";
 import { SectionHeading } from "../components/ui";
 import { problems, marketRealities } from "../content/egoto";
 import { ProblemIllustration } from "../components/Illustrations";
+import { useLanguage } from "../context/LanguageContext";
 
 const Probleme = () => {
+  const { language } = useLanguage();
+  const currentRealities = marketRealities[language];
+  const currentProblems = problems[language];
+
   return (
     <>
       <PageHero
-        eyebrow="Contexte et problème"
-          title="Le Togo a une réalité particulière."
-          text="Beaucoup de personnes n'ont pas accès aux banques, mais des millions pratiquent l'épargne collective. Cette discipline existe - elle mérite d'être reconnue et soutenue."
+        eyebrow={language === "fr" ? "Contexte et problème" : "Context & Problem"}
+        title={language === "fr" ? "Le Togo a une réalité particulière." : "Togo has a unique reality."}
+        text={
+          language === "fr"
+            ? "Beaucoup de personnes n'ont pas accès aux banques, mais des millions pratiquent l'épargne collective. Cette discipline existe - elle mérite d'être reconnue et soutenue."
+            : "Many people lack access to banks, but millions practice collective savings. This discipline exists - it deserves to be recognized and supported."
+        }
       />
 
       <section className="relative max-w-[1400px] mx-auto px-6 sm:px-10 pb-24 overflow-hidden">
@@ -21,9 +30,12 @@ const Probleme = () => {
         </div>
 
         <div className="relative z-10 max-w-4xl">
-          <SectionHeading eyebrow="Réalités du marché" title="Cinq constats simples." />
+          <SectionHeading
+            eyebrow={language === "fr" ? "Réalités du marché" : "Market Realities"}
+            title={language === "fr" ? "Cinq constats simples." : "Five simple observations."}
+          />
           <div className="mt-10">
-            {marketRealities.map((r) => (
+            {currentRealities.map((r) => (
               <RealityRow key={r.title} {...r} />
             ))}
           </div>
@@ -33,11 +45,15 @@ const Probleme = () => {
       <section className="bg-ink-soft/60 border-y border-ink-line py-24">
         <div className="max-w-[1400px] mx-auto px-6 sm:px-10">
           <SectionHeading
-            eyebrow="Trois problèmes spécifiques"
-            title="Trois enjeux concrets que rencontrent les commerçantes."
+            eyebrow={language === "fr" ? "Trois problèmes spécifiques" : "Three specific problems"}
+            title={
+              language === "fr"
+                ? "Trois enjeux concrets que rencontrent les commerçantes."
+                : "Three concrete challenges that market traders face."
+            }
           />
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-            {problems.map((p) => (
+            {currentProblems.map((p) => (
               <ProblemCard key={p.tag} {...p} />
             ))}
           </div>

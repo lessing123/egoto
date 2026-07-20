@@ -8,6 +8,7 @@ import Solution from "./pages/Solution";
 import Equipe from "./pages/Equipe";
 import Telecharger from "./pages/Telecharger";
 import Contact from "./pages/Contact";
+import { LanguageProvider } from "./context/LanguageContext";
 
 const ScrollToTop = () => {
   const { pathname, hash } = useLocation();
@@ -40,19 +41,21 @@ const Layout = ({ children }) => (
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/probleme" element={<Probleme />} />
-          <Route path="/solution" element={<Solution />} />
-          <Route path="/equipe" element={<Equipe />} />
-          <Route path="/telecharger" element={<Telecharger />} />
-          <Route path="/contact" element={<Contact />} />
-        </Routes>
-      </Layout>
-    </BrowserRouter>
+    <LanguageProvider>
+      <BrowserRouter>
+        <ScrollToTop />
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/probleme" element={<Probleme />} />
+            <Route path="/solution" element={<Solution />} />
+            <Route path="/equipe" element={<Equipe />} />
+            <Route path="/telecharger" element={<Telecharger />} />
+            <Route path="/contact" element={<Contact />} />
+          </Routes>
+        </Layout>
+      </BrowserRouter>
+    </LanguageProvider>
   );
 };
 
