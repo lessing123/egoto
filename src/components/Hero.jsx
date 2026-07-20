@@ -238,76 +238,58 @@ const CurrencyNote = ({ symbol, denomination, country, color, accentColor, emble
 );
 };
 
-const FloatingImageBill = ({ src, className = "", style, blur = "" }) => (
-  <div className={`absolute pointer-events-none select-none ${className} ${blur}`} style={style}>
-    <div className="relative overflow-visible" style={{ filter: "drop-shadow(0 15px 35px rgba(0,0,0,0.25))" }}>
-      <img 
-        src={src} 
-        alt="Banknote" 
-        className="w-full h-auto mix-blend-screen select-none pointer-events-none filter saturate-[1.1] contrast-[1.05]" 
-      />
+const FloatingCoin = ({ src, className = "", style }) => (
+  <div className={`absolute pointer-events-none select-none ${className}`} style={style}>
+    <div className="relative overflow-visible" style={{ filter: "drop-shadow(0 12px 28px rgba(0,0,0,0.55))" }}>
+      <div className="w-full aspect-square rounded-full border border-white/10 overflow-hidden bg-ink/40 backdrop-blur-[1px]">
+        <img 
+          src={src} 
+          alt="Coin" 
+          className="w-full h-full object-cover select-none pointer-events-none filter saturate-[1.1] contrast-[1.05]"
+          style={{ clipPath: "circle(46% at 50% 50%)" }}
+        />
+      </div>
+      {/* Shine overlay */}
+      <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/5 to-white/15 pointer-events-none mix-blend-overlay" />
+      <div className="absolute inset-0 rounded-full border border-white/20 pointer-events-none" />
     </div>
   </div>
 );
 
-const FloatingCoinsBackground = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
-    {/* West African 10,000 CFA Franc (FCFA) - Top Left */}
-    <FloatingImageBill 
-      src="/fcfa_bill.png" 
-      className="left-[1%] top-[14%] w-[170px] sm:w-[210px] animate-drift-float opacity-[0.55]" 
-    />
+const FloatingCoinsBackground = () => {
+  const coins = [
+    // Left side coins
+    { src: "/devises/100cfa.jpg", className: "left-[2%] top-[8%] w-[100px] sm:w-[130px] animate-drift-float opacity-[0.65]" },
+    { src: "/devises/25CFA.jpg", className: "left-[14%] top-[22%] w-[80px] sm:w-[100px] animate-sway opacity-[0.55]", delay: "-1.5s" },
+    { src: "/devises/CFA.jpg", className: "left-[25%] top-[8%] w-[90px] sm:w-[110px] animate-money-float opacity-[0.5]", delay: "-3s" },
+    { src: "/devises/cemac.jpg", className: "left-[8%] top-[45%] w-[85px] sm:w-[110px] animate-sway opacity-[0.5]", delay: "-4.5s" },
+    { src: "/devises/we.jpg", className: "left-[4%] bottom-[28%] w-[90px] sm:w-[115px] animate-drift-float opacity-[0.5]", delay: "-5.2s" },
+    { src: "/devises/ghc.jpg", className: "left-[18%] bottom-[12%] w-[85px] sm:w-[110px] animate-drift-float opacity-[0.6]", delay: "-2s" },
+    { src: "/devises/yen.jpg", className: "left-[28%] bottom-[25%] w-[80px] sm:w-[100px] animate-money-float opacity-[0.45]", delay: "-2.8s" },
+    
+    // Right side coins
+    { src: "/devises/dollars.jpg", className: "right-[3%] top-[6%] w-[110px] sm:w-[140px] animate-drift-float opacity-[0.7]", delay: "-0.5s" },
+    { src: "/devises/NAIRA.jpg", className: "right-[15%] top-[12%] w-[95px] sm:w-[120px] animate-drift-float opacity-[0.6]", delay: "-2.5s" },
+    { src: "/devises/dirham.jpg", className: "right-[25%] top-[28%] w-[90px] sm:w-[115px] animate-money-float opacity-[0.55]", delay: "-1s" },
+    { src: "/devises/euro.jpg", className: "right-[5%] top-[48%] w-[100px] sm:w-[130px] animate-sway opacity-[0.65]", delay: "-3.5s" },
+    { src: "/devises/rand.jpg", className: "right-[12%] bottom-[18%] w-[95px] sm:w-[125px] animate-money-float opacity-[0.55]", delay: "-4s" },
+    { src: "/devises/yoan.avif", className: "right-[32%] bottom-[22%] w-[85px] sm:w-[105px] animate-drift-float opacity-[0.5]", delay: "-0.8s" },
+    { src: "/devises/sterling.png", className: "right-[22%] bottom-[6%] w-[90px] sm:w-[115px] animate-sway opacity-[0.6]", delay: "-1.8s" }
+  ];
 
-    {/* US 100 Dollar Bill ($) - Top Right */}
-    <FloatingImageBill 
-      src="/usd_bill.png" 
-      className="right-[2%] top-[6%] w-[160px] sm:w-[190px] animate-sway opacity-[0.5]" 
-      style={{ animationDelay: "-1.5s" }}
-    />
-
-    {/* Euro 200 Bill (€) - Bottom Right */}
-    <FloatingImageBill 
-      src="/euro_bill.png" 
-      className="right-[1%] bottom-[8%] w-[180px] sm:w-[220px] animate-drift-float opacity-[0.45]" 
-      style={{ animationDelay: "-3.5s" }}
-    />
-
-    {/* Nigerian 1,000 Naira Bill (₦) - Middle Right */}
-    <FloatingImageBill 
-      src="/naira_bill.png" 
-      className="right-[32%] top-[16%] w-[130px] sm:w-[150px] animate-sway opacity-[0.6]" 
-      style={{ animationDelay: "-1s" }}
-    />
-
-    {/* Ghanaian 200 Cedi Bill (₵) - Bottom Left */}
-    <FloatingImageBill 
-      src="/cedi_bill.png" 
-      className="left-[4%] bottom-[12%] w-[140px] sm:w-[170px] animate-drift-float opacity-[0.55]" 
-      style={{ animationDelay: "-2.5s" }}
-    />
-
-    {/* Depth layered blurred bill - Euro far back */}
-    <FloatingImageBill 
-      src="/euro_bill.png" 
-      className="left-[35%] top-[3%] w-[110px] sm:w-[130px] animate-sway opacity-[0.25] blur-[4px]" 
-      style={{ animationDelay: "-4s" }}
-    />
-
-    {/* Depth layered blurred bill - FCFA middle left */}
-    <FloatingImageBill 
-      src="/fcfa_bill.png" 
-      className="left-[18%] top-[38%] w-[180px] sm:w-[210px] animate-drift-float opacity-[0.2] blur-[3px]" 
-      style={{ animationDelay: "-5s" }}
-    />
-
-    {/* Depth layered blurred bill - USD bottom left */}
-    <FloatingImageBill 
-      src="/usd_bill.png" 
-      className="right-[12%] bottom-[24%] w-[150px] sm:w-[170px] animate-sway opacity-[0.3] blur-[2px]" 
-      style={{ animationDelay: "-2s" }}
-    />
-  </div>
-);
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
+      {coins.map((coin, idx) => (
+        <FloatingCoin 
+          key={idx}
+          src={coin.src}
+          className={coin.className}
+          style={{ animationDelay: coin.delay || "0s" }}
+        />
+      ))}
+    </div>
+  );
+};
 
 const Hero = () => {
   return (
