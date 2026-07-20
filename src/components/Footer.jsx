@@ -33,23 +33,9 @@ const Footer = () => {
               L'épargne togolaise digitalisée : tontines, épargne individuelle et score financier
               accessibles depuis ton mobile, WhatsApp et USSD.
             </p>
-            {/*
-            <div className="flex gap-4 mt-6">
-              {socials.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  aria-label={s.label}
-                  className="w-11 h-11 rounded-full border-2 border-gold flex items-center justify-center hover:bg-gold/10 transition-all text-gold"
-                >
-                  <img src={s.icon} alt={s.label} className="w-5 h-5" />
-                </a>
-              ))}
-            </div>
-            */}
           </div>
 
-          <div className="grid grid-cols-2 gap-10 flex-1 max-w-md">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-10 flex-1 max-w-xl">
             {columns.map((col) => (
               <div key={col.title}>
                 <h4 className="font-display text-paper text-base mb-4">{col.title}</h4>
@@ -58,7 +44,7 @@ const Footer = () => {
                     <li key={l.label}>
                       <Link
                         to={l.to}
-                        className="font-body text-sm text-paper-dim hover:text-gold transition-colors"
+                        className="font-body text-sm text-paper-dim hover:text-terracotta transition-colors"
                       >
                         {l.label}
                       </Link>
@@ -67,15 +53,39 @@ const Footer = () => {
                 </ul>
               </div>
             ))}
+
+            {/* Contact column */}
+            <div>
+              <h4 className="font-display text-paper text-base mb-4">Contact</h4>
+              <ul className="flex flex-col gap-3">
+                <li>
+                  <a href="mailto:contact@egoto.xyz" className="font-body text-sm text-paper-dim hover:text-terracotta transition-colors">
+                    contact@egoto.xyz
+                  </a>
+                </li>
+                <li>
+                  <a href="mailto:prisille.gogoyi@egoto.xyz" className="font-body text-sm text-paper-dim hover:text-terracotta transition-colors">
+                    Partenariats
+                  </a>
+                </li>
+                <li>
+                  <span className="font-body text-sm text-paper-dim">
+                    Lomé, Togo
+                  </span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
         <div className="knot-divider my-10" />
 
-        <div className="flex justify-center items-center text-center text-xs font-body text-paper-dim/70">
-          <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
-            <p>Egoto - Bientôt disponible</p>
-            <p className="hidden sm:block">· Pilote mobile, WhatsApp et USSD</p>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-body text-paper-dim/70">
+          <p>© {new Date().getFullYear()} Egoto — Tous droits réservés</p>
+          <div className="flex items-center gap-4">
+            <a href="mailto:contact@egoto.xyz" className="hover:text-terracotta transition-colors">contact@egoto.xyz</a>
+            <span className="hidden sm:inline">·</span>
+            <span className="hidden sm:inline">Pilote mobile, WhatsApp et USSD</span>
           </div>
         </div>
       </div>
