@@ -125,12 +125,60 @@ const PhoneMock = () => (
   </div>
 );
 
+const FloatingCoin = ({ className = "", size = "w-16 h-16", rotation = "rotate-0", opacity = "opacity-40", blur = "", style }) => (
+  <div className={`absolute pointer-events-none select-none ${size} ${rotation} ${opacity} ${blur} ${className}`} style={style}>
+    <svg viewBox="0 0 100 100" width="100%" height="100%" className="overflow-visible">
+      <defs>
+        <linearGradient id="coinGoldBack" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FBBF24" />
+          <stop offset="100%" stopColor="#D97706" />
+        </linearGradient>
+        <linearGradient id="coinGoldInner" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#FFFBEB" />
+          <stop offset="100%" stopColor="#FBBF24" />
+        </linearGradient>
+        <filter id="coinGoldShadow" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#D97706" floodOpacity="0.3" />
+        </filter>
+      </defs>
+      <circle cx="50" cy="50" r="44" fill="url(#coinGoldBack)" filter="url(#coinGoldShadow)" />
+      <circle cx="50" cy="50" r="36" fill="url(#coinGoldInner)" />
+      <circle cx="50" cy="50" r="30" fill="none" stroke="#F59E0B" strokeWidth="2.5" strokeDasharray="5 3" />
+      {/* Shiny star in center */}
+      <path d="M50 36 L53 47 L64 50 L53 53 L50 64 L47 53 L36 50 L47 47 Z" fill="#FFFFFF" opacity="0.95" />
+    </svg>
+  </div>
+);
+
+const FloatingCoinsBackground = () => (
+  <div className="absolute inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
+    {/* Coin 1: Top Left, large, blurred, behind text */}
+    <FloatingCoin className="left-[4%] top-[14%] animate-float-slow" size="w-24 h-24" rotation="rotate-[12deg]" opacity="opacity-[0.2]" blur="blur-[4px]" />
+    
+    {/* Coin 2: Bottom Left, medium-large, sharp */}
+    <FloatingCoin className="left-[8%] bottom-[12%] animate-money-float" size="w-16 h-16" rotation="rotate-[-10deg]" opacity="opacity-[0.3]" style={{ animationDelay: "-2s" }} />
+
+    {/* Coin 3: Top Right, medium, blurred */}
+    <FloatingCoin className="right-[6%] top-[8%] animate-float-slow" size="w-20 h-20" rotation="rotate-[35deg]" opacity="opacity-[0.22]" blur="blur-[3px]" style={{ animationDelay: "-1.5s" }} />
+
+    {/* Coin 4: Center-Left, small, sharp */}
+    <FloatingCoin className="left-[42%] top-[8%] animate-money-float" size="w-10 h-10" rotation="rotate-[25deg]" opacity="opacity-[0.35]" style={{ animationDelay: "-4s" }} />
+
+    {/* Coin 5: Near Phone mock, small, sharp */}
+    <FloatingCoin className="right-[38%] top-[22%] animate-float-slow" size="w-12 h-12" rotation="rotate-[-18deg]" opacity="opacity-[0.45]" style={{ animationDelay: "-3.5s" }} />
+
+    {/* Coin 6: Bottom Right, very large, heavily blurred */}
+    <FloatingCoin className="right-[2%] bottom-[6%] animate-money-float" size="w-32 h-32" rotation="rotate-[20deg]" opacity="opacity-[0.14]" blur="blur-[6px]" style={{ animationDelay: "-5s" }} />
+  </div>
+);
+
 const Hero = () => {
   return (
     <section className="relative overflow-hidden pt-14 pb-24 sm:pt-20">
       <div className="absolute inset-0 wax-dots opacity-30" />
       <div className="absolute -top-32 -left-20 w-96 h-96 bg-terracotta/20 rounded-full blur-[120px]" />
       <div className="absolute top-40 right-0 w-[28rem] h-[28rem] bg-palm/20 rounded-full blur-[130px]" />
+      <FloatingCoinsBackground />
 
       <div className="relative max-w-[1400px] mx-auto px-6 sm:px-10 grid md:grid-cols-2 gap-14 items-center">
         <div className="animate-rise">
