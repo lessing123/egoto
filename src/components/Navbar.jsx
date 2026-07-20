@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink, Link } from "react-router-dom";
 import Logo from "./Logo";
 import { useLanguage } from "../context/LanguageContext";
+import { LanguageIcon } from "./Icons";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -56,7 +57,7 @@ const Navbar = () => {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-ink-line text-paper-dim hover:text-gold hover:border-gold transition-colors font-body text-xs font-semibold uppercase tracking-wider bg-ink-soft/40"
             title={language === "fr" ? "Switch to English" : "Passer en Français"}
           >
-            <span>🌐</span>
+            <LanguageIcon className="w-3.5 h-3.5" />
             <span>{language === "fr" ? "EN" : "FR"}</span>
           </button>
           
@@ -73,7 +74,7 @@ const Navbar = () => {
             onClick={toggleLanguage}
             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-ink-line text-paper-dim hover:text-gold transition-colors font-body text-xs font-semibold uppercase bg-ink-soft/40"
           >
-            <span>🌐</span>
+            <LanguageIcon className="w-3.5 h-3.5" />
             <span>{language === "fr" ? "EN" : "FR"}</span>
           </button>
           
@@ -120,7 +121,7 @@ const Navbar = () => {
                 }}
                 className="flex items-center gap-2 px-4 py-2 rounded-full border border-ink-line text-paper font-bold text-sm bg-ink"
               >
-                <span>🌐</span>
+                <LanguageIcon className="w-4 h-4 text-paper" />
                 <span>{language === "fr" ? "English" : "Français"}</span>
               </button>
             </li>

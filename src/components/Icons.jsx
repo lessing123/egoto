@@ -83,3 +83,11 @@ export const DownloadIcon = ({ className = "" }) => (
     <path d="M5 19H19" strokeWidth="1.8" strokeLinecap="round" />
   </svg>
 );
+
+export const LanguageIcon = ({ className = "" }) => (
+  <svg viewBox="0 0 24 24" className={`${baseClass} ${className}`} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="10" strokeWidth="1.8" />
+    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" strokeWidth="1.8" />
+    <path d="M2 12h20" strokeWidth="1.8" />
+  </svg>
+);
