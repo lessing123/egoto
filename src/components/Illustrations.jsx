@@ -41,6 +41,10 @@ export const SavingsIllustration = () => (
         <stop offset="50%" stopColor="#F59E0B" />
         <stop offset="100%" stopColor="#D97706" />
       </linearGradient>
+      <linearGradient id="greenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#2d5f4d" />
+        <stop offset="100%" stopColor="#173325" />
+      </linearGradient>
       <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
         <feDropShadow dx="0" dy="12" stdDeviation="16" floodColor="#173325" floodOpacity="0.12" />
       </filter>
@@ -460,6 +464,352 @@ export const WhatsAppBotIllustration = () => (
       
       <rect x="216" y="295" width="40" height="14" rx="7" fill="rgba(7, 94, 84, 0.15)" />
       <text x="236" y="305" textAnchor="middle" fill="#075E54" fontSize="7" fontWeight="bold" fontFamily="sans-serif">KABYÈ</text>
+    </g>
+  </svg>
+);
+
+// 6. Problem / Risk & Vulnerability Illustration
+export const ProblemIllustration = () => (
+  <svg
+    viewBox="0 0 400 400"
+    width="100%"
+    height="100%"
+    className="max-w-[340px] mx-auto overflow-visible"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <style>
+      {`
+        @keyframes warning-pulse {
+          0%, 100% { opacity: 0.3; transform: scale(0.96); }
+          50% { opacity: 0.85; transform: scale(1.04); }
+        }
+        @keyframes float-books {
+          0%, 100% { transform: translateY(0) rotate(-2deg); }
+          50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        @keyframes key-rotate {
+          0% { transform: rotate(0deg); }
+          25% { transform: rotate(-15deg); }
+          75% { transform: rotate(15deg); }
+          100% { transform: rotate(0deg); }
+        }
+        .anim-warn { animation: warning-pulse 3s ease-in-out infinite; transform-origin: 200px 200px; }
+        .anim-books { animation: float-books 5.5s ease-in-out infinite; transform-origin: 200px 240px; }
+        .anim-key { animation: key-rotate 3.5s ease-in-out infinite; transform-origin: 260px 140px; }
+      `}
+    </style>
+    <defs>
+      <radialGradient id="problemGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#EF4444" stopOpacity="0.08" />
+        <stop offset="100%" stopColor="#EF4444" stopOpacity="0" />
+      </radialGradient>
+      <filter id="shadow-book" x="-10%" y="-10%" width="120%" height="120%">
+        <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#173325" floodOpacity="0.15" />
+      </filter>
+    </defs>
+
+    {/* Background Glow */}
+    <circle cx="200" cy="200" r="160" fill="url(#problemGlow)" className="anim-warn" />
+
+    {/* Shield in background */}
+    <path
+      d="M200 90 L270 120 V190 C270 240 230 280 200 300 C170 280 130 240 130 190 V120 Z"
+      stroke="rgba(239, 68, 68, 0.15)"
+      strokeWidth="3"
+      strokeDasharray="6 4"
+    />
+
+    {/* Traditional Books/Registers (Informal paper bookkeeping) */}
+    <g className="anim-books" filter="url(#shadow-book)">
+      {/* Bottom ledger book */}
+      <rect x="110" y="200" width="160" height="45" rx="8" fill="#173325" />
+      <rect x="118" y="200" width="144" height="6" fill="#FBBF24" opacity="0.8" />
+      <line x1="130" y1="225" x2="250" y2="225" stroke="#FFFFFF" strokeWidth="2" strokeDasharray="10 4" opacity="0.3" />
+
+      {/* Top ledger book (slanted) */}
+      <g transform="translate(20, -25) rotate(-10 200 200)">
+        <rect x="110" y="170" width="160" height="40" rx="8" fill="#FFFFFF" stroke="#173325" strokeWidth="2" />
+        <rect x="110" y="170" width="20" height="40" rx="2" fill="#2d5f4d" />
+        {/* Lined pages */}
+        <line x1="140" y1="185" x2="250" y2="185" stroke="rgba(23, 51, 37, 0.2)" strokeWidth="1.5" />
+        <line x1="140" y1="195" x2="220" y2="195" stroke="rgba(23, 51, 37, 0.2)" strokeWidth="1.5" />
+      </g>
+    </g>
+
+    {/* Hanging open padlock */}
+    <g className="anim-key" filter="url(#shadow-book)">
+      {/* Padlock Body */}
+      <rect x="235" y="130" width="50" height="40" rx="6" fill="#EF4444" />
+      {/* Shackle (Open) */}
+      <path d="M245 130V115c0-10 7-15 15-15s15 5 15 15v5" stroke="#EF4444" strokeWidth="3" strokeLinecap="round" fill="none" />
+      <circle cx="260" cy="150" r="4" fill="#FFFFFF" />
+      <line x1="260" y1="154" x2="260" y2="164" stroke="#FFFFFF" strokeWidth="2.5" />
+    </g>
+
+    {/* Floating warning icons */}
+    <g className="anim-warn">
+      <circle cx="90" cy="120" r="14" fill="#EF4444" opacity="0.8" />
+      <text x="90" y="125" textAnchor="middle" fill="#FFFFFF" fontSize="14" fontWeight="bold" fontFamily="sans-serif">!</text>
+      
+      <circle cx="310" cy="270" r="12" fill="#EF4444" opacity="0.8" />
+      <text x="310" y="274" textAnchor="middle" fill="#FFFFFF" fontSize="12" fontWeight="bold" fontFamily="sans-serif">?</text>
+    </g>
+  </svg>
+);
+
+// 7. Team & Collaboration Illustration
+export const TeamIllustration = () => (
+  <svg
+    viewBox="0 0 400 400"
+    width="100%"
+    height="100%"
+    className="max-w-[340px] mx-auto overflow-visible"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <style>
+      {`
+        @keyframes gear-rotate-cw {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes gear-rotate-ccw {
+          from { transform: rotate(360deg); }
+          to { transform: rotate(0deg); }
+        }
+        @keyframes pulse-dot {
+          0%, 100% { transform: scale(1); opacity: 0.5; }
+          50% { transform: scale(1.2); opacity: 1; }
+        }
+        .anim-gear-cw { animation: gear-rotate-cw 12s linear infinite; transform-origin: 200px 200px; }
+        .anim-gear-ccw { animation: gear-rotate-ccw 8s linear infinite; transform-origin: 258px 150px; }
+        .anim-pulse-dot { animation: pulse-dot 3s ease-in-out infinite; }
+      `}
+    </style>
+    
+    <defs>
+      <radialGradient id="teamGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#2d5f4d" stopOpacity="0.1" />
+        <stop offset="100%" stopColor="#2d5f4d" stopOpacity="0" />
+      </radialGradient>
+      <filter id="shadow-team" x="-10%" y="-10%" width="120%" height="120%">
+        <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="#173325" floodOpacity="0.1" />
+      </filter>
+    </defs>
+
+    {/* Background Glow */}
+    <circle cx="200" cy="200" r="160" fill="url(#teamGlow)" />
+
+    {/* Network connecting lines */}
+    <path d="M120 150 L200 200 L280 150 L200 280 Z" stroke="rgba(23, 51, 37, 0.15)" strokeWidth="2" strokeDasharray="6 4" />
+    
+    {/* Large Central Gear (CW) */}
+    <g className="anim-gear-cw" stroke="#173325" strokeWidth="4" fill="none">
+      <circle cx="200" cy="200" r="45" strokeDasharray="14 12" />
+      <circle cx="200" cy="200" r="32" fill="#FFFFFF" strokeWidth="2" />
+      {/* Inner spoke lines */}
+      <line x1="200" y1="180" x2="200" y2="220" strokeWidth="2.5" />
+      <line x1="180" y1="200" x2="220" y2="200" strokeWidth="2.5" />
+    </g>
+
+    {/* Smaller interlocking Gear (CCW) */}
+    <g className="anim-gear-ccw" stroke="#FBBF24" strokeWidth="3" fill="none">
+      <circle cx="258" cy="150" r="28" strokeDasharray="10 8" />
+      <circle cx="258" cy="150" r="20" fill="#FFFFFF" strokeWidth="1.5" />
+      {/* Inner spoke lines */}
+      <line x1="258" y1="138" x2="258" y2="162" strokeWidth="2" />
+      <line x1="246" y1="150" x2="270" y2="150" strokeWidth="2" />
+    </g>
+
+    {/* Nodes representing the Founders / Collaboration */}
+    <g filter="url(#shadow-team)">
+      {/* Node 1 - Growth / Priscille */}
+      <g transform="translate(100, 130)">
+        <circle cx="20" cy="20" r="28" fill="#FFFFFF" stroke="#2d5f4d" strokeWidth="2" />
+        <circle cx="20" cy="20" r="24" fill="#2d5f4d" opacity="0.1" />
+        <text x="20" y="25" textAnchor="middle" fill="#173325" fontSize="13" fontWeight="bold" fontFamily="sans-serif">GP</text>
+        <circle cx="38" cy="8" r="6" fill="#22C55E" className="anim-pulse-dot" /> {/* Online status */}
+      </g>
+
+      {/* Node 2 - Product / Obed */}
+      <g transform="translate(248, 130)">
+        <circle cx="20" cy="20" r="28" fill="#FFFFFF" stroke="#FBBF24" strokeWidth="2" />
+        <circle cx="20" cy="20" r="24" fill="#FBBF24" opacity="0.15" />
+        <text x="20" y="25" textAnchor="middle" fill="#173325" fontSize="13" fontWeight="bold" fontFamily="sans-serif">DO</text>
+        <circle cx="38" cy="8" r="6" fill="#22C55E" className="anim-pulse-dot" />
+      </g>
+
+      {/* Node 3 - Engineering / Achiraf */}
+      <g transform="translate(174, 252)">
+        <circle cx="20" cy="20" r="28" fill="#FFFFFF" stroke="#173325" strokeWidth="2" />
+        <circle cx="20" cy="20" r="24" fill="#173325" opacity="0.1" />
+        <text x="20" y="25" textAnchor="middle" fill="#173325" fontSize="13" fontWeight="bold" fontFamily="sans-serif">TA</text>
+        <circle cx="38" cy="8" r="6" fill="#22C55E" className="anim-pulse-dot" />
+      </g>
+    </g>
+
+    {/* Sparkle detailing */}
+    <path d="M80 230l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4z" fill="#FBBF24" />
+    <path d="M310 240l3 6 6 3-6 3-3 6-3-6-6-3 6-3 3-6z" fill="#2d5f4d" />
+  </svg>
+);
+
+// 8. Download / Install Application Illustration
+export const DownloadIllustration = () => (
+  <svg
+    viewBox="0 0 400 400"
+    width="100%"
+    height="100%"
+    className="max-w-[340px] mx-auto overflow-visible"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <style>
+      {`
+        @keyframes arrow-slide {
+          0% { transform: translateY(-20px); opacity: 0; }
+          30% { opacity: 1; }
+          70% { transform: translateY(15px); opacity: 1; }
+          100% { transform: translateY(30px); opacity: 0; }
+        }
+        @keyframes float-mock {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
+        }
+        @keyframes scale-ring {
+          0% { transform: scale(0.9); opacity: 0.8; }
+          100% { transform: scale(1.2); opacity: 0; }
+        }
+        .anim-arrow { animation: arrow-slide 2.8s linear infinite; }
+        .anim-download-phone { animation: float-mock 6s ease-in-out infinite; transform-origin: 200px 200px; }
+        .anim-pulse-ring { animation: scale-ring 3s cubic-bezier(0.16, 1, 0.3, 1) infinite; transform-origin: 200px 170px; }
+      `}
+    </style>
+
+    <defs>
+      <radialGradient id="downGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#173325" stopOpacity="0.1" />
+        <stop offset="100%" stopColor="#173325" stopOpacity="0" />
+      </radialGradient>
+      <filter id="shadow-download" x="-10%" y="-10%" width="120%" height="120%">
+        <feDropShadow dx="0" dy="12" stdDeviation="16" floodColor="#173325" floodOpacity="0.12" />
+      </filter>
+    </defs>
+
+    {/* Background Glow */}
+    <circle cx="200" cy="200" r="160" fill="url(#downGlow)" />
+
+    {/* Pulsing radar rings */}
+    <circle cx="200" cy="170" r="60" stroke="#FBBF24" strokeWidth="2" className="anim-pulse-ring" />
+    <circle cx="200" cy="170" r="85" stroke="#2d5f4d" strokeWidth="1.5" className="anim-pulse-ring" style={{ animationDelay: "1.5s" }} />
+
+    {/* Smartphone mock */}
+    <g className="anim-download-phone" filter="url(#shadow-download)">
+      <rect x="130" y="80" width="140" height="240" rx="24" fill="#173325" stroke="rgba(23, 51, 37, 0.1)" strokeWidth="2" />
+      <rect x="137" y="87" width="126" height="226" rx="18" fill="#F9F9F9" />
+      
+      {/* Screen layout skeleton */}
+      <circle cx="200" cy="120" r="20" fill="rgba(23, 51, 37, 0.05)" />
+      <rect x="155" y="150" width="90" height="10" rx="5" fill="#173325" opacity="0.8" />
+      <rect x="165" y="168" width="70" height="6" rx="3" fill="#FBBF24" opacity="0.9" />
+      
+      {/* Centered Download Arrow animation */}
+      <g className="anim-arrow" transform="translate(200, 160)">
+        <path d="M0-15 V15 M-10 5 L0 15 L10 5" stroke="#173325" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      </g>
+
+      {/* Button outline */}
+      <rect x="150" y="240" width="100" height="24" rx="12" fill="none" stroke="#173325" strokeWidth="2" />
+      <line x1="170" y1="252" x2="230" y2="252" stroke="#173325" strokeWidth="2" strokeLinecap="round" />
+    </g>
+
+    {/* Floating App Store Badges outline */}
+    <g transform="translate(60, 240)" className="anim-download-phone">
+      <rect width="60" height="32" rx="6" fill="#FFFFFF" stroke="#173325" strokeWidth="1.5" />
+      {/* Android Play logo shape */}
+      <path d="M15 10 l30 6 -30 6 z" fill="#2d5f4d" opacity="0.3" />
+    </g>
+
+    <g transform="translate(280, 110)" className="anim-download-phone" style={{ animationDelay: "1s" }}>
+      <rect width="60" height="32" rx="6" fill="#FFFFFF" stroke="#173325" strokeWidth="1.5" />
+      {/* Apple App logo shape */}
+      <circle cx="30" cy="16" r="8" fill="#FBBF24" opacity="0.4" />
+    </g>
+  </svg>
+);
+
+// 9. Contact / Communication Illustration
+export const ContactIllustration = () => (
+  <svg
+    viewBox="0 0 400 400"
+    width="100%"
+    height="100%"
+    className="max-w-[340px] mx-auto overflow-visible"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <style>
+      {`
+        @keyframes hover-letter {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50% { transform: translateY(-12px) rotate(2deg); }
+        }
+        @keyframes scale-wave {
+          0% { transform: scale(0.8); opacity: 0; }
+          50% { opacity: 0.8; }
+          100% { transform: scale(1.3); opacity: 0; }
+        }
+        @keyframes bubble-pop {
+          0%, 100% { transform: scale(0.9); opacity: 0.8; }
+          50% { transform: scale(1.05); opacity: 1; }
+        }
+        .anim-letter { animation: hover-letter 6s ease-in-out infinite; transform-origin: 200px 200px; }
+        .anim-wave { animation: scale-wave 3.5s ease-in-out infinite; transform-origin: 200px 200px; }
+        .anim-bubble { animation: bubble-pop 4.5s ease-in-out infinite; }
+      `}
+    </style>
+    <defs>
+      <radialGradient id="contactGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#173325" stopOpacity="0.1" />
+        <stop offset="100%" stopColor="#173325" stopOpacity="0" />
+      </radialGradient>
+      <filter id="shadow-letter" x="-10%" y="-10%" width="120%" height="120%">
+        <feDropShadow dx="0" dy="12" stdDeviation="16" floodColor="#173325" floodOpacity="0.12" />
+      </filter>
+    </defs>
+
+    {/* Background Glow */}
+    <circle cx="200" cy="200" r="160" fill="url(#contactGlow)" />
+
+    {/* Propagating signal waves */}
+    <circle cx="200" cy="200" r="90" stroke="rgba(23, 51, 37, 0.08)" strokeWidth="3" className="anim-wave" />
+    <circle cx="200" cy="200" r="130" stroke="rgba(251, 191, 36, 0.1)" strokeWidth="2" className="anim-wave" style={{ animationDelay: "1.8s" }} />
+
+    {/* Hovering Envelope */}
+    <g className="anim-letter" filter="url(#shadow-letter)">
+      {/* Back of Envelope */}
+      <rect x="90" y="120" width="220" height="150" rx="16" fill="#173325" />
+      {/* Inserted Paper */}
+      <rect x="110" y="90" width="180" height="80" rx="6" fill="#F9F9F9" />
+      <line x1="130" y1="115" x2="270" y2="115" stroke="rgba(23, 51, 37, 0.2)" strokeWidth="2" strokeLinecap="round" />
+      <line x1="130" y1="130" x2="240" y2="130" stroke="rgba(23, 51, 37, 0.2)" strokeWidth="2" strokeLinecap="round" />
+      <line x1="130" y1="145" x2="200" y2="145" stroke="#FBBF24" strokeWidth="2.5" strokeLinecap="round" />
+
+      {/* Front flap folds of envelope */}
+      <path d="M90 120 l110 80 l110 -80" stroke="#FFFFFF" strokeWidth="3" strokeLinejoin="round" fill="none" opacity="0.15" />
+      <path d="M90 270 l85 -70 M310 270 l-85 -70" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.1" />
+    </g>
+
+    {/* Speech Bubbles */}
+    <g className="anim-bubble" transform="translate(60, 240)" filter="url(#shadow-letter)">
+      <rect width="64" height="26" rx="13" fill="#FFFFFF" stroke="#2d5f4d" strokeWidth="1.5" />
+      <text x="32" y="16" textAnchor="middle" fill="#173325" fontSize="8" fontWeight="bold" fontFamily="sans-serif">SALUT !</text>
+    </g>
+
+    <g className="anim-bubble" transform="translate(260, 80)" filter="url(#shadow-letter)" style={{ animationDelay: "1.5s" }}>
+      <rect width="70" height="26" rx="13" fill="#FFFFFF" stroke="#FBBF24" strokeWidth="1.5" />
+      <text x="35" y="16" textAnchor="middle" fill="#173325" fontSize="8" fontWeight="bold" fontFamily="sans-serif">DEMO ?</text>
     </g>
   </svg>
 );

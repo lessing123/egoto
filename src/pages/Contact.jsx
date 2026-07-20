@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { PageHero, SectionHeading } from "../components/ui";
 import { MailIcon, LocationIcon, HandshakeIcon } from "../components/Icons";
+import { ContactIllustration } from "../components/Illustrations";
 
 const Contact = () => {
   const [sent, setSent] = useState(false);
@@ -85,6 +86,9 @@ const Contact = () => {
               <LocationIcon className="text-gold w-5 h-5" />
               <span className="text-paper-dim">Lomé, Togo</span>
             </div>
+          </div>
+          <div className="mt-12 flex justify-center md:justify-start items-center select-none shrink-0">
+            <ContactIllustration />
           </div>
         </div>
 

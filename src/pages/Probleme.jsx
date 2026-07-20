@@ -3,6 +3,7 @@ import { PageHero } from "../components/ui";
 import { ProblemCard, RealityRow, CTASection } from "../components/blocks";
 import { SectionHeading } from "../components/ui";
 import { problems, marketRealities } from "../content/egoto";
+import { ProblemIllustration } from "../components/Illustrations";
 
 const Probleme = () => {
   return (
@@ -15,10 +16,15 @@ const Probleme = () => {
 
       <section className="max-w-[1400px] mx-auto px-6 sm:px-10 pb-24">
         <SectionHeading eyebrow="Réalités du marché" title="Cinq constats simples." />
-        <div className="mt-10 max-w-3xl">
-          {marketRealities.map((r) => (
-            <RealityRow key={r.title} {...r} />
-          ))}
+        <div className="grid md:grid-cols-[1fr_340px] gap-12 items-center mt-10">
+          <div className="max-w-3xl">
+            {marketRealities.map((r) => (
+              <RealityRow key={r.title} {...r} />
+            ))}
+          </div>
+          <div className="flex justify-center items-center select-none shrink-0">
+            <ProblemIllustration />
+          </div>
         </div>
       </section>
 
