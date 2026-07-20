@@ -2,6 +2,7 @@ import React from "react";
 import { PageHero, SectionHeading, Pill } from "../components/ui";
 import { ModuleCard, ScoreLadder, CTASection } from "../components/blocks";
 import { modules, scoreTiers } from "../content/egoto";
+import { SavingsIllustration } from "../components/Illustrations";
 
 const Solution = () => {
   const epargne = modules.find((m) => m.id === "epargne");
@@ -17,26 +18,32 @@ const Solution = () => {
       <section className="max-w-5xl mx-auto px-6 sm:px-10 pb-8">
         <div className="rounded-3xl p-8 sm:p-12 bg-gradient-to-br from-terracotta/15 via-ink-soft to-palm/10 border border-gold/30 relative overflow-hidden">
           <div className="absolute -top-24 -right-24 w-72 h-72 bg-gold/20 rounded-full blur-[100px]" />
-          <div className="relative">
-            <Pill tone="gold">Fonctionnalité mise en avant</Pill>
-            <h2 className="font-display font-semibold text-2xl sm:text-3xl text-paper mt-4">
-              Épargne solo - mettez de côté à votre rythme.
-            </h2>
-            <div className="grid sm:grid-cols-2 gap-x-8 gap-y-4 mt-6">
-                {[
-                ["Cotisez seul·e si vous préférez", "Pas d'obligation de groupe - c'est votre épargne, vos règles."],
-                ["Objectif personnel", "Pour la scolarité, les achats saisonniers ou un projet précis."],
-                ["Vous décidez du montant", "Changez le montant ou la durée quand vous le souhaitez."],
-                ["Compte verrouillable ou libre", "Choisissez de bloquer les fonds jusqu'à l'objectif, ou d'y accéder librement."],
-              ].map(([t, d]) => (
-                <div key={t} className="flex gap-3">
-                  <span className="text-gold font-display text-xl">✓</span>
-                  <div>
-                    <p className="font-body font-bold text-paper text-sm">{t}</p>
-                    <p className="font-body text-paper-dim text-sm mt-1 leading-relaxed">{d}</p>
+          <div className="relative grid md:grid-cols-[1fr_260px] gap-8 items-center">
+            <div>
+              <Pill tone="gold">Fonctionnalité mise en avant</Pill>
+              <h2 className="font-display font-semibold text-2xl sm:text-3xl text-paper mt-4">
+                Épargne solo - mettez de côté à votre rythme.
+              </h2>
+              <div className="grid sm:grid-cols-2 gap-x-8 gap-y-4 mt-6">
+                  {[
+                  ["Cotisez seul·e si vous préférez", "Pas d'obligation de groupe - c'est votre épargne, vos règles."],
+                  ["Objectif personnel", "Pour la scolarité, les achats saisonniers ou un projet précis."],
+                  ["Vous décidez du montant", "Changez le montant ou la durée quand vous le souhaitez."],
+                  ["Compte verrouillable ou libre", "Choisissez de bloquer les fonds jusqu'à l'objectif, ou d'y accéder librement."],
+                ].map(([t, d]) => (
+                  <div key={t} className="flex gap-3">
+                    <span className="text-gold font-display text-xl">✓</span>
+                    <div>
+                      <p className="font-body font-bold text-paper text-sm">{t}</p>
+                      <p className="font-body text-paper-dim text-sm mt-1 leading-relaxed">{d}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-center items-center select-none shrink-0 md:max-w-[260px]">
+              <SavingsIllustration />
             </div>
           </div>
         </div>

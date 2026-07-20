@@ -1,5 +1,20 @@
 import React from "react";
 import { Pill, PrimaryButton, GhostButton, Eyebrow } from "./ui";
+import { SavingsIllustration, CircleIllustration, ScoreIllustration } from "./Illustrations";
+
+const getIllustration = (id) => {
+  switch (id) {
+    case "tontines":
+      return <CircleIllustration />;
+    case "epargne":
+      return <SavingsIllustration />;
+    case "score":
+    case "carte":
+      return <ScoreIllustration />;
+    default:
+      return null;
+  }
+};
 
 export const StatBand = ({ stats }) => (
   <section className="relative border-y border-ink-line bg-ink-soft/60">
@@ -32,40 +47,55 @@ export const RealityRow = ({ title, text }) => (
   </div>
 );
 
-export const ModuleCard = ({ mod }) => (
-  <div
-    id={mod.id}
-    className={`scroll-mt-28 rounded-3xl p-8 sm:p-10 card-surface relative overflow-hidden ${
-      mod.highlight ? "ring-1 ring-gold/50" : ""
-    }`}
-  >
-    {mod.highlight && (
-      <div className="absolute top-0 right-0">
-        <Pill tone="gold">
-          <span className="px-1">★ Fonctionnalité clé</span>
-        </Pill>
-      </div>
-    )}
-    <div className="flex items-baseline gap-4">
-      <span className="font-display italic text-gold/50 text-5xl">{mod.number}</span>
-      <div>
-        <h3 className="font-display font-semibold text-2xl sm:text-3xl text-paper">{mod.title}</h3>
-        <p className="font-body text-terracotta text-sm font-bold uppercase tracking-wide mt-1">
-          {mod.subtitle}
-        </p>
+export const ModuleCard = ({ mod }) => {
+  const illustration = getIllustration(mod.id);
+
+  return (
+    <div
+      id={mod.id}
+      className={`scroll-mt-28 rounded-3xl p-8 sm:p-10 card-surface relative overflow-hidden ${
+        mod.highlight ? "ring-1 ring-gold/50" : ""
+      }`}
+    >
+      {mod.highlight && (
+        <div className="absolute top-0 right-0">
+          <Pill tone="gold">
+            <span className="px-1">★ Fonctionnalité clé</span>
+          </Pill>
+        </div>
+      )}
+
+      <div className={illustration ? "grid md:grid-cols-[1fr_260px] gap-8 items-center" : ""}>
+        <div>
+          <div className="flex items-baseline gap-4">
+            <span className="font-display italic text-gold/50 text-5xl">{mod.number}</span>
+            <div>
+              <h3 className="font-display font-semibold text-2xl sm:text-3xl text-paper">{mod.title}</h3>
+              <p className="font-body text-terracotta text-sm font-bold uppercase tracking-wide mt-1">
+                {mod.subtitle}
+              </p>
+            </div>
+          </div>
+          <p className="font-body text-paper-dim mt-5 text-base leading-relaxed">{mod.summary}</p>
+          <ul className="mt-6 flex flex-col gap-3">
+            {mod.points.map((p, i) => (
+              <li key={i} className="flex gap-3 font-body text-sm text-paper/85">
+                <span className="text-gold mt-0.5">✓</span>
+                <span className="leading-relaxed">{p}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {illustration && (
+          <div className="flex justify-center items-center select-none shrink-0 md:max-w-[260px]">
+            {illustration}
+          </div>
+        )}
       </div>
     </div>
-    <p className="font-body text-paper-dim mt-5 text-base leading-relaxed">{mod.summary}</p>
-    <ul className="mt-6 flex flex-col gap-3">
-      {mod.points.map((p, i) => (
-        <li key={i} className="flex gap-3 font-body text-sm text-paper/85">
-          <span className="text-gold mt-0.5">✓</span>
-          <span className="leading-relaxed">{p}</span>
-        </li>
-      ))}
-    </ul>
-  </div>
-);
+  );
+};
 
 export const ScoreLadder = ({ tiers }) => (
   <div className="flex flex-col gap-4">
