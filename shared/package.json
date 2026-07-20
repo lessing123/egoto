@@ -1,0 +1,7 @@
+{
+  "name": "@egoto/shared",
+  "version": "1.0.0",
+  "private": true,
+  "main": "content.ts",
+  "types": "content.ts"
+}

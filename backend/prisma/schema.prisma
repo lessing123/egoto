@@ -1,0 +1,201 @@
+// ═══════════════════════════════════════════════════════════════
+// Egoto — Schéma Prisma
+// ═══════════════════════════════════════════════════════════════
+// Tous les montants sont en FCFA (entiers, pas de centimes)
+// Les numéros de téléphone sont au format E.164 (+228XXXXXXXX)
+// Le PIN est hashé avec bcrypt — jamais stocké en clair
+// ═══════════════════════════════════════════════════════════════
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── User ───────────────────────────────────────────────────
+model User {
+  id        String   @id @default(uuid())
+  phone     String   @unique // E.164: +228XXXXXXXX
+  pinHash   String // bcrypt hash, jamais en clair
+  firstName String
+  lastName  String
+  language  String   @default("fr") // "fr" | "en"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  memberships    CircleMember[]
+  contributions  Contribution[]
+  savingsPots    SavingsPot[]
+  score          EgotoScore?
+  scoreEvents    ScoreEvent[]
+  cards          Card[]
+  transactions   Transaction[]
+  paymentIntents PaymentIntent[]
+
+  @@index([phone])
+}
+
+// ─── Circle (Cercle de tontine) ─────────────────────────────
+model Circle {
+  id           String   @id @default(uuid())
+  name         String
+  amount       Int // Montant par cotisation en FCFA
+  frequency    String // "weekly" | "biweekly" | "monthly"
+  maxMembers   Int
+  currentCycle Int      @default(1) // Tour actuel
+  status       String   @default("active") // "active" | "completed" | "cancelled"
+  createdById  String
+  inviteCode   String?  @unique // Code à 5 caractères alphanumériques
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  members       CircleMember[]
+  contributions Contribution[]
+
+  @@index([status])
+  @@index([createdById])
+}
+
+// ─── CircleMember ───────────────────────────────────────────
+model CircleMember {
+  id       String   @id @default(uuid())
+  userId   String
+  circleId String
+  position Int // Ordre dans la rotation (1-based)
+  role     String   @default("member") // "admin" | "member"
+  joinedAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  circle Circle @relation(fields: [circleId], references: [id])
+
+  @@unique([userId, circleId])
+  @@index([circleId])
+}
+
+// ─── Contribution (Cotisation) ──────────────────────────────
+model Contribution {
+  id              String    @id @default(uuid())
+  userId          String
+  circleId        String? // null si cotisation bol
+  savingsPotId    String? // null si cotisation cercle
+  amount          Int // FCFA
+  cycle           Int? // Numéro du cycle (tontine uniquement)
+  status          String    @default("pending") // "pending" | "confirmed" | "failed"
+  paymentIntentId String?   @unique
+  createdAt       DateTime  @default(now())
+  confirmedAt     DateTime?
+
+  user          User           @relation(fields: [userId], references: [id])
+  circle        Circle?        @relation(fields: [circleId], references: [id])
+  savingsPot    SavingsPot?    @relation(fields: [savingsPotId], references: [id])
+  paymentIntent PaymentIntent? @relation(fields: [paymentIntentId], references: [id])
+
+  @@index([userId])
+  @@index([circleId])
+  @@index([savingsPotId])
+  @@index([status])
+}
+
+// ─── SavingsPot (Bol d'épargne) ─────────────────────────────
+model SavingsPot {
+  id            String    @id @default(uuid())
+  userId        String
+  name          String
+  targetAmount  Int // Objectif en FCFA
+  currentAmount Int       @default(0)
+  mode          String // "fixed" | "free"
+  frequency     String? // "weekly"|"biweekly"|"monthly" (si fixed)
+  fixedAmount   Int? // Montant fixe par cotisation (si fixed)
+  isLocked      Boolean   @default(false) // Verrouillé jusqu'à l'objectif
+  targetDate    DateTime?
+  status        String    @default("active") // "active" | "completed" | "withdrawn"
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id])
+  contributions Contribution[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+// ─── EgotoScore ─────────────────────────────────────────────
+model EgotoScore {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  score     Int      @default(0) // 0-1000
+  tier      String   @default("beginner") // "beginner"|"standard"|"imf"|"gold"
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// ─── ScoreEvent (Historique des points) ─────────────────────
+model ScoreEvent {
+  id          String   @id @default(uuid())
+  userId      String
+  type        String // "contribution_ontime"|"cycle_complete"|"pot_goal"|"late"|"default"
+  points      Int // positif ou négatif
+  description String?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// ─── Card (Carte Visa Egoto) ────────────────────────────────
+model Card {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   @default("virtual") // "virtual" | "physical"
+  tier      String   @default("standard") // "standard" | "gold"
+  lastFour  String // 4 derniers chiffres
+  status    String   @default("inactive") // "inactive"|"active"|"blocked"
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+// ─── Transaction ────────────────────────────────────────────
+model Transaction {
+  id          String   @id @default(uuid())
+  userId      String
+  type        String // "contribution"|"withdrawal"|"card_payment"|"payout"
+  amount      Int // FCFA
+  direction   String // "in" | "out"
+  reference   String?
+  description String?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// ─── PaymentIntent ──────────────────────────────────────────
+model PaymentIntent {
+  id          String    @id @default(uuid())
+  userId      String
+  amount      Int // FCFA
+  provider    String    @default("simulated") // "simulated"|"cinetpay"|"pawapay"
+  externalRef String? // Référence côté agrégateur
+  status      String    @default("initiated") // "initiated"|"confirmed"|"failed"
+  initiatedAt DateTime  @default(now())
+  confirmedAt DateTime?
+
+  user         User          @relation(fields: [userId], references: [id])
+  contribution Contribution?
+
+  @@index([userId])
+  @@index([status])
+}

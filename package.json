@@ -1,12 +1,25 @@
 {
-  "name": "egoto",
+  "name": "egoto-monorepo",
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "workspaces": [
+    "shared",
+    "backend",
+    "whatsapp-bot",
+    "mobile"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:bot": "npm run dev --workspace=whatsapp-bot",
+    "dev:mobile": "npm run start --workspace=mobile",
+    "db:migrate": "npm run db:migrate --workspace=backend",
+    "db:generate": "npm run db:generate --workspace=backend",
+    "db:studio": "npm run db:studio --workspace=backend",
+    "db:seed": "npm run db:seed --workspace=backend"
   },
   "dependencies": {
     "react": "^18.2.0",
