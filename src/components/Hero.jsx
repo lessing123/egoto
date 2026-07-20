@@ -87,11 +87,10 @@ const DigitalMoneyFlow = () => (
       </div>
     </div>
 
-    {/* Background circles centered */}
-    <div className="absolute inset-0 rounded-[3rem] border border-white/5" />
-    <div className="absolute left-1/2 top-1/2 w-[220px] h-[220px] sm:w-[330px] sm:h-[330px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold/10" style={{ animation: "spin-slow-centered 30s linear infinite" }} />
-    <div className="absolute left-1/2 top-1/2 w-[320px] h-[320px] sm:w-[460px] sm:h-[460px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-palm/10" style={{ animation: "spin-reverse-centered 40s linear infinite" }} />
-    <div className="absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-gold/18 to-terracotta/10 blur-2xl" />
+    {/* Background circles centered - aligned with orbit paths */}
+    <div className="absolute left-1/2 top-1/2 w-[360px] h-[360px] md:w-[460px] md:h-[460px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-gold/15 pointer-events-none" />
+    <div className="absolute left-1/2 top-1/2 w-[500px] h-[500px] md:w-[620px] md:h-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-palm/15 pointer-events-none" />
+    <div className="absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-gold/18 to-terracotta/10 blur-2xl pointer-events-none" />
   </div>
 );
 
