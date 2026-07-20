@@ -125,50 +125,69 @@ const PhoneMock = () => (
   </div>
 );
 
-const FloatingCoin = ({ className = "", size = "w-16 h-16", rotation = "rotate-0", opacity = "opacity-40", blur = "", style }) => (
-  <div className={`absolute pointer-events-none select-none ${size} ${rotation} ${opacity} ${blur} ${className}`} style={style}>
-    <svg viewBox="0 0 100 100" width="100%" height="100%" className="overflow-visible">
-      <defs>
-        <linearGradient id="coinGoldBack" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#FBBF24" />
-          <stop offset="100%" stopColor="#D97706" />
-        </linearGradient>
-        <linearGradient id="coinGoldInner" x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#FFFBEB" />
-          <stop offset="100%" stopColor="#FBBF24" />
-        </linearGradient>
-        <filter id="coinGoldShadow" x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="0" dy="10" stdDeviation="12" floodColor="#D97706" floodOpacity="0.3" />
-        </filter>
-      </defs>
-      <circle cx="50" cy="50" r="44" fill="url(#coinGoldBack)" filter="url(#coinGoldShadow)" />
-      <circle cx="50" cy="50" r="36" fill="url(#coinGoldInner)" />
-      <circle cx="50" cy="50" r="30" fill="none" stroke="#F59E0B" strokeWidth="2.5" strokeDasharray="5 3" />
-      {/* Shiny star in center */}
-      <path d="M50 36 L53 47 L64 50 L53 53 L50 64 L47 53 L36 50 L47 47 Z" fill="#FFFFFF" opacity="0.95" />
-    </svg>
+const CurrencyNote = ({ symbol, denomination, country, color, accentColor, className = "", style }) => {
+  const noteId = `note-${symbol}-${denomination}`.replace(/\s/g, '');
+  return (
+  <div className={`absolute pointer-events-none select-none ${className}`} style={style}>
+    <div className="relative" style={{ filter: "drop-shadow(0 8px 20px rgba(0,0,0,0.12))" }}>
+      <svg viewBox="0 0 120 70" width="100%" height="100%" className="overflow-visible">
+        <defs>
+          <linearGradient id={noteId} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={color} />
+            <stop offset="100%" stopColor={accentColor} />
+          </linearGradient>
+        </defs>
+        {/* Banknote shape */}
+        <rect x="2" y="2" width="116" height="66" rx="8" fill={`url(#${noteId})`} />
+        <rect x="6" y="6" width="108" height="58" rx="5" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1" strokeDasharray="3 2" />
+        {/* Currency Symbol */}
+        <text x="18" y="35" fill="rgba(255,255,255,0.95)" fontSize="22" fontWeight="bold" fontFamily="'Fraunces', serif">{symbol}</text>
+        {/* Denomination */}
+        <text x="100" y="22" fill="rgba(255,255,255,0.8)" fontSize="12" fontWeight="bold" fontFamily="sans-serif" textAnchor="end">{denomination}</text>
+        {/* Country name */}
+        <text x="100" y="56" fill="rgba(255,255,255,0.5)" fontSize="7" fontFamily="sans-serif" textAnchor="end" letterSpacing="1">{country}</text>
+        {/* Decorative circle */}
+        <circle cx="55" cy="48" r="10" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
+        <circle cx="55" cy="48" r="6" fill="rgba(255,255,255,0.08)" />
+      </svg>
+    </div>
   </div>
 );
+};
 
 const FloatingCoinsBackground = () => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
-    {/* Coin 1: Top Left, large, blurred, behind text */}
-    <FloatingCoin className="left-[4%] top-[14%] animate-float-slow" size="w-24 h-24" rotation="rotate-[12deg]" opacity="opacity-[0.2]" blur="blur-[4px]" />
-    
-    {/* Coin 2: Bottom Left, medium-large, sharp */}
-    <FloatingCoin className="left-[8%] bottom-[12%] animate-money-float" size="w-16 h-16" rotation="rotate-[-10deg]" opacity="opacity-[0.3]" style={{ animationDelay: "-2s" }} />
+    {/* FCFA 10,000 - West Africa (Togo, Benin, Senegal...) */}
+    <CurrencyNote symbol="F" denomination="10 000" country="FCFA · UEMOA" color="#2D5F4D" accentColor="#142B20"
+      className="left-[2%] top-[12%] w-[140px] animate-drift-float opacity-[0.28]" />
 
-    {/* Coin 3: Top Right, medium, blurred */}
-    <FloatingCoin className="right-[6%] top-[8%] animate-float-slow" size="w-20 h-20" rotation="rotate-[35deg]" opacity="opacity-[0.22]" blur="blur-[3px]" style={{ animationDelay: "-1.5s" }} />
+    {/* Nigerian Naira ₦ 1,000 */}
+    <CurrencyNote symbol="₦" denomination="1 000" country="NAIRA · NIGERIA" color="#1A6B3C" accentColor="#0D4A2A"
+      className="right-[4%] top-[6%] w-[120px] animate-sway opacity-[0.22]" style={{ animationDelay: "-1.5s" }} />
 
-    {/* Coin 4: Center-Left, small, sharp */}
-    <FloatingCoin className="left-[42%] top-[8%] animate-money-float" size="w-10 h-10" rotation="rotate-[25deg]" opacity="opacity-[0.35]" style={{ animationDelay: "-4s" }} />
+    {/* Ghanaian Cedi ₵ 200 */}
+    <CurrencyNote symbol="₵" denomination="200" country="CEDI · GHANA" color="#8B6914" accentColor="#5C4510"
+      className="left-[6%] bottom-[14%] w-[110px] animate-drift-float opacity-[0.3]" style={{ animationDelay: "-2.5s" }} />
 
-    {/* Coin 5: Near Phone mock, small, sharp */}
-    <FloatingCoin className="right-[38%] top-[22%] animate-float-slow" size="w-12 h-12" rotation="rotate-[-18deg]" opacity="opacity-[0.45]" style={{ animationDelay: "-3.5s" }} />
+    {/* South African Rand R 200 */}
+    <CurrencyNote symbol="R" denomination="200" country="RAND · SA" color="#1B4F72" accentColor="#0E3450"
+      className="right-[2%] bottom-[8%] w-[150px] animate-sway opacity-[0.16] blur-[2px]" style={{ animationDelay: "-3.5s" }} />
 
-    {/* Coin 6: Bottom Right, very large, heavily blurred */}
-    <FloatingCoin className="right-[2%] bottom-[6%] animate-money-float" size="w-32 h-32" rotation="rotate-[20deg]" opacity="opacity-[0.14]" blur="blur-[6px]" style={{ animationDelay: "-5s" }} />
+    {/* Kenyan Shilling KSh 1000 */}
+    <CurrencyNote symbol="KSh" denomination="1 000" country="SHILLING · KENYA" color="#7B3F00" accentColor="#5A2D00"
+      className="left-[40%] top-[5%] w-[100px] animate-drift-float opacity-[0.25]" style={{ animationDelay: "-4s" }} />
+
+    {/* Moroccan Dirham MAD 200 */}
+    <CurrencyNote symbol="DH" denomination="200" country="DIRHAM · MAROC" color="#6B2D5B" accentColor="#4A1E40"
+      className="right-[35%] top-[18%] w-[95px] animate-sway opacity-[0.32]" style={{ animationDelay: "-1s" }} />
+
+    {/* XOF FCFA 5000 - blurred depth piece */}
+    <CurrencyNote symbol="F" denomination="5 000" country="FCFA · BCEAO" color="#2D5F4D" accentColor="#1A3D30"
+      className="left-[18%] top-[42%] w-[160px] animate-drift-float opacity-[0.12] blur-[4px]" style={{ animationDelay: "-5s" }} />
+
+    {/* Egyptian Pound E£ 200 - bottom left large */}
+    <CurrencyNote symbol="E£" denomination="200" country="POUND · EGYPT" color="#8B4513" accentColor="#654321"
+      className="right-[12%] bottom-[28%] w-[130px] animate-sway opacity-[0.18] blur-[2px]" style={{ animationDelay: "-2s" }} />
   </div>
 );
 
