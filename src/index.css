@@ -256,17 +256,17 @@ body {
 
 /* Orbit Radii scaling */
 .orbit-inner {
-  --orbit-radius: 110px;
+  --orbit-radius: 180px;
 }
 .orbit-outer {
-  --orbit-radius: 160px;
+  --orbit-radius: 250px;
 }
 
 @media (min-width: 768px) {
   .orbit-inner {
-    --orbit-radius: 165px;
+    --orbit-radius: 230px;
   }
   .orbit-outer {
-    --orbit-radius: 230px;
+    --orbit-radius: 310px;
   }
 }
