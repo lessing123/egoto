@@ -238,39 +238,74 @@ const CurrencyNote = ({ symbol, denomination, country, color, accentColor, emble
 );
 };
 
+const FloatingImageBill = ({ src, className = "", style, blur = "" }) => (
+  <div className={`absolute pointer-events-none select-none ${className} ${blur}`} style={style}>
+    <div className="relative overflow-visible" style={{ filter: "drop-shadow(0 15px 35px rgba(0,0,0,0.25))" }}>
+      <img 
+        src={src} 
+        alt="Banknote" 
+        className="w-full h-auto mix-blend-screen select-none pointer-events-none filter saturate-[1.1] contrast-[1.05]" 
+      />
+    </div>
+  </div>
+);
+
 const FloatingCoinsBackground = () => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
-    {/* FCFA 10,000 - West Africa (Togo, Benin, Senegal...) */}
-    <CurrencyNote symbol="F" denomination="10 000" country="BCEAO · UEMOA" color="#1F4E3D" accentColor="#0C251C" emblemCode="FCFA"
-      className="left-[1%] top-[14%] w-[145px] animate-drift-float opacity-[0.4]" />
+    {/* West African 10,000 CFA Franc (FCFA) - Top Left */}
+    <FloatingImageBill 
+      src="/fcfa_bill.png" 
+      className="left-[1%] top-[14%] w-[170px] sm:w-[210px] animate-drift-float opacity-[0.55]" 
+    />
 
-    {/* Nigerian Naira ₦ 1,000 */}
-    <CurrencyNote symbol="₦" denomination="1 000" country="CBN · NIGERIA" color="#165B32" accentColor="#0B371E" emblemCode="NAIRA"
-      className="right-[3%] top-[7%] w-[125px] animate-sway opacity-[0.35]" style={{ animationDelay: "-1.5s" }} />
+    {/* US 100 Dollar Bill ($) - Top Right */}
+    <FloatingImageBill 
+      src="/usd_bill.png" 
+      className="right-[2%] top-[6%] w-[160px] sm:w-[190px] animate-sway opacity-[0.5]" 
+      style={{ animationDelay: "-1.5s" }}
+    />
 
-    {/* Ghanaian Cedi ₵ 200 */}
-    <CurrencyNote symbol="₵" denomination="200" country="BoG · GHANA" color="#7C5D10" accentColor="#473406" emblemCode="CEDI"
-      className="left-[5%] bottom-[12%] w-[120px] animate-drift-float opacity-[0.42]" style={{ animationDelay: "-2.5s" }} />
+    {/* Euro 200 Bill (€) - Bottom Right */}
+    <FloatingImageBill 
+      src="/euro_bill.png" 
+      className="right-[1%] bottom-[8%] w-[180px] sm:w-[220px] animate-drift-float opacity-[0.45]" 
+      style={{ animationDelay: "-3.5s" }}
+    />
 
-    {/* South African Rand R 200 */}
-    <CurrencyNote symbol="R" denomination="200" country="SARB · SOUTH AFRICA" color="#1A4A6B" accentColor="#0B2538" emblemCode="RAND"
-      className="right-[1%] bottom-[10%] w-[155px] animate-sway opacity-[0.3]" style={{ animationDelay: "-3.5s" }} />
+    {/* Nigerian 1,000 Naira Bill (₦) - Middle Right */}
+    <FloatingImageBill 
+      src="/naira_bill.png" 
+      className="right-[32%] top-[16%] w-[130px] sm:w-[150px] animate-sway opacity-[0.6]" 
+      style={{ animationDelay: "-1s" }}
+    />
 
-    {/* Kenyan Shilling KSh 1000 */}
-    <CurrencyNote symbol="KSh" denomination="1 000" country="CBK · KENYA" color="#6E3203" accentColor="#3C1A01" emblemCode="SHILLING"
-      className="left-[38%] top-[4%] w-[110px] animate-drift-float opacity-[0.38]" style={{ animationDelay: "-4s" }} />
+    {/* Ghanaian 200 Cedi Bill (₵) - Bottom Left */}
+    <FloatingImageBill 
+      src="/cedi_bill.png" 
+      className="left-[4%] bottom-[12%] w-[140px] sm:w-[170px] animate-drift-float opacity-[0.55]" 
+      style={{ animationDelay: "-2.5s" }}
+    />
 
-    {/* Moroccan Dirham MAD 200 */}
-    <CurrencyNote symbol="DH" denomination="200" country="BAM · MAROC" color="#5C1F4D" accentColor="#340E2A" emblemCode="DIRHAM"
-      className="right-[32%] top-[19%] w-[105px] animate-sway opacity-[0.45]" style={{ animationDelay: "-1s" }} />
+    {/* Depth layered blurred bill - Euro far back */}
+    <FloatingImageBill 
+      src="/euro_bill.png" 
+      className="left-[35%] top-[3%] w-[110px] sm:w-[130px] animate-sway opacity-[0.25] blur-[4px]" 
+      style={{ animationDelay: "-4s" }}
+    />
 
-    {/* BCEAO FCFA 5,000 */}
-    <CurrencyNote symbol="F" denomination="5 000" country="BCEAO · WEST AFRICA" color="#18483B" accentColor="#0D2D24" emblemCode="FCFA"
-      className="left-[16%] top-[40%] w-[155px] animate-drift-float opacity-[0.2] blur-[3px]" style={{ animationDelay: "-5s" }} />
+    {/* Depth layered blurred bill - FCFA middle left */}
+    <FloatingImageBill 
+      src="/fcfa_bill.png" 
+      className="left-[18%] top-[38%] w-[180px] sm:w-[210px] animate-drift-float opacity-[0.2] blur-[3px]" 
+      style={{ animationDelay: "-5s" }}
+    />
 
-    {/* Egyptian Pound E£ 200 */}
-    <CurrencyNote symbol="E£" denomination="200" country="CBE · EGYPT" color="#7C3B0E" accentColor="#471E04" emblemCode="POUND"
-      className="right-[10%] bottom-[26%] w-[135px] animate-sway opacity-[0.25]" style={{ animationDelay: "-2s" }} />
+    {/* Depth layered blurred bill - USD bottom left */}
+    <FloatingImageBill 
+      src="/usd_bill.png" 
+      className="right-[12%] bottom-[24%] w-[150px] sm:w-[170px] animate-sway opacity-[0.3] blur-[2px]" 
+      style={{ animationDelay: "-2s" }}
+    />
   </div>
 );
 
