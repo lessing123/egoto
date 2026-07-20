@@ -7,7 +7,12 @@ const MoneyChip = ({ className = "", children, tone = "gold", style }) => {
     gold: "border-gold/25 bg-ink-soft/90 text-paper",
     palm: "border-palm/25 bg-ink-soft/90 text-paper",
     terracotta: "border-terracotta/25 bg-ink-soft/90 text-paper",
-
+  };
+  
+  const bulletColors = {
+    gold: "bg-gold shadow-[0_0_18px_rgba(201,170,79,0.8)]",
+    palm: "bg-palm shadow-[0_0_18px_rgba(46,125,50,0.8)]",
+    terracotta: "bg-terracotta shadow-[0_0_18px_rgba(216,67,21,0.8)]"
   };
 
   return (
@@ -16,7 +21,7 @@ const MoneyChip = ({ className = "", children, tone = "gold", style }) => {
       style={style}
     >
       <div className="flex items-center gap-2">
-        <span className="h-2.5 w-2.5 rounded-full bg-gold shadow-[0_0_18px_rgba(201,170,79,0.8)]" />
+        <span className={`h-2.5 w-2.5 rounded-full ${bulletColors[tone]}`} />
         <span className="font-body text-[11px] font-semibold tracking-wide uppercase">{children}</span>
       </div>
     </div>
@@ -44,18 +49,36 @@ const DigitalMoneyFlow = () => (
     <div className="absolute inset-x-14 top-14 h-px bg-gradient-to-r from-transparent via-gold/35 to-transparent" />
     <div className="absolute inset-x-24 bottom-20 h-px bg-gradient-to-r from-transparent via-palm/35 to-transparent" />
 
-    {/* Orbiting Money Chips */}
+    {/* Orbiting Money Chips - Inner Ring (cw) */}
     <OrbitingChip tone="gold" radiusClass="orbit-inner" direction="cw" delay="0s" duration="24s">
-      Bot Whatsapp
+      Bot WhatsApp
     </OrbitingChip>
-    <OrbitingChip tone="palm" radiusClass="orbit-inner" direction="cw" delay="-12s" duration="24s">
+    <OrbitingChip tone="palm" radiusClass="orbit-inner" direction="cw" delay="-6s" duration="24s">
       Code USSD
     </OrbitingChip>
-
-    <OrbitingChip tone="palm" radiusClass="orbit-inner" direction="cw" delay="-12s" duration="24s">
-      ios & Android App
+    <OrbitingChip tone="terracotta" radiusClass="orbit-inner" direction="cw" delay="-12s" duration="24s">
+      iOS & Android
     </OrbitingChip>
-   
+    <OrbitingChip tone="gold" radiusClass="orbit-inner" direction="cw" delay="-18s" duration="24s">
+      Sécurisé
+    </OrbitingChip>
+
+    {/* Orbiting Money Chips - Outer Ring (ccw) */}
+    <OrbitingChip tone="palm" radiusClass="orbit-outer" direction="ccw" delay="0s" duration="30s">
+      Tontine
+    </OrbitingChip>
+    <OrbitingChip tone="terracotta" radiusClass="orbit-outer" direction="ccw" delay="-6s" duration="30s">
+      Automatique
+    </OrbitingChip>
+    <OrbitingChip tone="gold" radiusClass="orbit-outer" direction="ccw" delay="-12s" duration="30s">
+      IA
+    </OrbitingChip>
+    <OrbitingChip tone="palm" radiusClass="orbit-outer" direction="ccw" delay="-18s" duration="30s">
+      Facilité
+    </OrbitingChip>
+    <OrbitingChip tone="terracotta" radiusClass="orbit-outer" direction="ccw" delay="-24s" duration="30s">
+      Épargne
+    </OrbitingChip>
 
     {/* Background moving dot */}
     <div className="absolute left-8 right-8 top-1/2 -translate-y-1/2">
