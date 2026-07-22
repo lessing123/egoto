@@ -8,8 +8,9 @@ import {
   ViewStyle,
   TextStyle,
   ActivityIndicator,
+  Platform,
 } from "react-native";
-import { COLORS } from "../theme/colors";
+import { COLORS, THEME_STATE } from "../theme/colors";
 
 // ─── BUTTON COMPONENT ────────────────────────────────────────
 
@@ -32,27 +33,39 @@ export function Button({
   style,
   textStyle,
 }: ButtonProps) {
+  const currentTheme = THEME_STATE.current;
+  const isDark = THEME_STATE.isDark;
+
   const getStyles = () => {
     switch (variant) {
       case "secondary":
         return {
-          button: [styles.btn, styles.btnSecondary],
-          text: [styles.btnText, styles.btnTextSecondary],
+          button: [
+            styles.btn, 
+            { 
+              backgroundColor: isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(23, 51, 37, 0.05)", 
+              borderWidth: 1, 
+              borderColor: currentTheme.border, 
+              shadowOpacity: 0, 
+              elevation: 0 
+            }
+          ],
+          text: [styles.btnText, { color: currentTheme.textPrimary }],
         };
       case "accent":
         return {
-          button: [styles.btn, styles.btnAccent],
-          text: [styles.btnText, styles.btnTextAccent],
+          button: [styles.btn, { backgroundColor: currentTheme.accent }],
+          text: [styles.btnText, { color: currentTheme.accentForeground }],
         };
       case "danger":
         return {
-          button: [styles.btn, styles.btnDanger],
-          text: [styles.btnText, styles.btnTextDanger],
+          button: [styles.btn, { backgroundColor: COLORS.error }],
+          text: [styles.btnText, { color: "#FFFFFF" }],
         };
-      default:
+      default: // primary
         return {
-          button: [styles.btn, styles.btnPrimary],
-          text: [styles.btnText, styles.btnTextPrimary],
+          button: [styles.btn, { backgroundColor: currentTheme.primary }],
+          text: [styles.btnText, { color: currentTheme.primaryForeground }],
         };
     }
   };
@@ -71,7 +84,7 @@ export function Button({
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={variant === "secondary" ? COLORS.primary : "#FFF"} />
+        <ActivityIndicator color={variant === "secondary" ? currentTheme.textPrimary : (variant === "accent" ? currentTheme.accentForeground : "#FFF")} />
       ) : (
         <Text style={[currentStyle.text, textStyle]}>{title}</Text>
       )}
@@ -90,6 +103,8 @@ interface InputProps {
   label?: string;
   error?: string;
   style?: ViewStyle;
+  prefix?: string;
+  maxLength?: number;
 }
 
 export function Input({
@@ -101,19 +116,52 @@ export function Input({
   label,
   error,
   style,
+  prefix,
+  maxLength,
 }: InputProps) {
+  const currentTheme = THEME_STATE.current;
+
   return (
     <View style={[styles.inputContainer, style]}>
-      {label && <Text style={styles.inputLabel}>{label}</Text>}
-      <TextInput
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        placeholderTextColor={COLORS.textGray}
-        secureTextEntry={secureTextEntry}
-        keyboardType={keyboardType}
-        style={[styles.input, error ? styles.inputError : null]}
-      />
+      {label && <Text style={[styles.inputLabel, { color: currentTheme.textPrimary }]}>{label}</Text>}
+      <View style={{ flexDirection: "row", gap: 8, width: "100%", alignItems: "center" }}>
+        {prefix && (
+          <View
+            style={[
+              styles.input,
+              {
+                width: 70,
+                backgroundColor: currentTheme.surfaceElevated,
+                borderColor: currentTheme.border,
+                justifyContent: "center",
+                alignItems: "center",
+                paddingHorizontal: 0,
+              }
+            ]}
+          >
+            <Text style={{ color: currentTheme.textPrimary, fontWeight: "bold", fontSize: 16 }}>{prefix}</Text>
+          </View>
+        )}
+        <TextInput
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          placeholderTextColor={currentTheme.textSecondary}
+          secureTextEntry={secureTextEntry}
+          keyboardType={keyboardType}
+          maxLength={maxLength}
+          style={[
+            styles.input, 
+            { 
+              flex: 1,
+              backgroundColor: currentTheme.surfaceElevated,
+              borderColor: currentTheme.border,
+              color: currentTheme.textPrimary
+            },
+            error ? styles.inputError : null
+          ]}
+        />
+      </View>
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
@@ -128,12 +176,14 @@ interface ProgressBarProps {
 
 export function ProgressBar({ progress, style }: ProgressBarProps) {
   const clampledProgress = Math.max(0, Math.min(1, progress));
+  const currentTheme = THEME_STATE.current;
+
   return (
-    <View style={[styles.progressContainer, style]}>
+    <View style={[styles.progressContainer, { backgroundColor: currentTheme.surfaceElevated }, style]}>
       <View
         style={[
           styles.progressBar,
-          { width: `${clampledProgress * 100}%` },
+          { width: `${clampledProgress * 100}%`, backgroundColor: currentTheme.primary },
         ]}
       />
     </View>
@@ -151,27 +201,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     paddingHorizontal: 24,
-    shadowColor: COLORS.primaryDark,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 2,
-  },
-  btnPrimary: {
-    backgroundColor: COLORS.primary,
-  },
-  btnSecondary: {
-    backgroundColor: COLORS.primaryLight,
-    borderWidth: 1,
-    borderColor: COLORS.primary,
-    shadowOpacity: 0,
-    elevation: 0,
-  },
-  btnAccent: {
-    backgroundColor: COLORS.accent,
-  },
-  btnDanger: {
-    backgroundColor: COLORS.error,
   },
   btnDisabled: {
     backgroundColor: "#E2EAE7",
@@ -183,18 +217,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-  btnTextPrimary: {
-    color: "#FFFFFF",
-  },
-  btnTextSecondary: {
-    color: COLORS.primary,
-  },
-  btnTextAccent: {
-    color: "#FFFFFF",
-  },
-  btnTextDanger: {
-    color: "#FFFFFF",
-  },
 
   // Input
   inputContainer: {
@@ -203,19 +225,15 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     fontSize: 14,
-    color: COLORS.textDark,
     marginBottom: 6,
     fontWeight: "500",
   },
   input: {
     height: 52,
-    backgroundColor: "#F0F4F2",
     borderRadius: 14,
     paddingHorizontal: 16,
     fontSize: 15,
-    color: COLORS.textDark,
     borderWidth: 1,
-    borderColor: "transparent",
   },
   inputError: {
     borderColor: COLORS.error,
@@ -229,14 +247,12 @@ const styles = StyleSheet.create({
   // Progress Bar
   progressContainer: {
     height: 8,
-    backgroundColor: "#E2EAE7",
     borderRadius: 4,
     overflow: "hidden",
     width: "100%",
   },
   progressBar: {
     height: "100%",
-    backgroundColor: COLORS.primary,
     borderRadius: 4,
   },
 });

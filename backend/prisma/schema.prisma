@@ -20,11 +20,16 @@ model User {
   id        String   @id @default(uuid())
   phone     String   @unique // E.164: +228XXXXXXXX
   pinHash   String // bcrypt hash, jamais en clair
-  firstName String
-  lastName  String
-  language  String   @default("fr") // "fr" | "en"
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  firstName      String
+  lastName       String
+  language       String   @default("fr") // "fr" | "en"
+  egotoId        String?  @unique // Identifiant Egoto (ex: EG-12345)
+  email          String?
+  cniNumber      String?  // Numéro CNI pour renforcement sécurité
+  passportNumber String?  // Numéro passeport pour renforcement sécurité
+  isVerified     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   // Relations
   memberships    CircleMember[]
@@ -109,7 +114,8 @@ model SavingsPot {
   targetAmount  Int // Objectif en FCFA
   currentAmount Int       @default(0)
   mode          String // "fixed" | "free"
-  frequency     String? // "weekly"|"biweekly"|"monthly" (si fixed)
+  frequency     String? // "weekly"|"biweekly"|"monthly"|"custom" (si fixed)
+  customDays    Int? // Nombre de jours personnalisé (si frequency === custom)
   fixedAmount   Int? // Montant fixe par cotisation (si fixed)
   isLocked      Boolean   @default(false) // Verrouillé jusqu'à l'objectif
   targetDate    DateTime?

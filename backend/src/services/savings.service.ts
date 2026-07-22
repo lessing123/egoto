@@ -12,6 +12,7 @@ export class SavingsService {
       targetAmount: number;
       mode: "fixed" | "free";
       frequency?: string;
+      customDays?: number;
       fixedAmount?: number;
       isLocked: boolean;
       targetDate?: Date;
@@ -28,6 +29,7 @@ export class SavingsService {
         targetAmount: data.targetAmount,
         mode: data.mode,
         frequency: data.frequency,
+        customDays: data.customDays,
         fixedAmount: data.fixedAmount,
         isLocked: data.isLocked,
         targetDate: data.targetDate,

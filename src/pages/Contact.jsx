@@ -138,9 +138,9 @@ const Contact = () => {
                   <p className="font-body text-paper-dim text-sm mt-1.5 leading-relaxed">
                     {t("contact.collab.desc")}
                   </p>
-                  <a href="mailto:prisille.gogoyi@egoto.xyz" className="inline-flex items-center gap-2 mt-3 font-body font-bold text-sm text-terracotta hover:text-paper transition-colors">
+                  <a href="mailto:priscille.gogoyi@egoto.xyz" className="inline-flex items-center gap-2 mt-3 font-body font-bold text-sm text-terracotta hover:text-paper transition-colors">
                     <MailIcon className="w-4 h-4" />
-                    prisille.gogoyi@egoto.xyz
+                    priscille.gogoyi@egoto.xyz
                   </a>
                 </div>
               </div>

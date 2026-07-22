@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, View, ViewStyle, Platform } from "react-native";
 import { BlurView } from "expo-blur";
-import { COLORS } from "../theme/colors";
+import { COLORS, THEME_STATE } from "../theme/colors";
 
 interface GlassCardProps {
   children: React.ReactNode;
@@ -15,20 +15,21 @@ interface GlassCardProps {
  * bordure fine semi-transparente, et ombre douce pour un rendu premium.
  */
 export function GlassCard({ children, style, intensity = 40 }: GlassCardProps) {
-  // Sur iOS, BlurView est parfait. Sur Android, il peut y avoir des lenteurs
-  // selon le système, mais BlurView est maintenant bien supporté en Expo SDK 51.
-  // En fallback (si l'intensité est à 0 ou non supporté), on met un fond blanc translucide.
+  const isDark = THEME_STATE.isDark;
+  const currentTheme = THEME_STATE.current;
+  const cardBg = isDark ? "rgba(23, 51, 37, 0.7)" : "rgba(255, 255, 255, 0.88)";
+  const cardBorder = currentTheme.border;
+  
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, { backgroundColor: cardBg, borderColor: cardBorder }, style]}>
       {Platform.OS === "web" ? (
-        // Sur le Web, on simule backdrop-filter avec CSS en natif ou fond translucide.
-        <View style={[styles.glassFallback, { backgroundColor: COLORS.glassBg }]}>
+        <View style={[styles.glassFallback, { backgroundColor: cardBg }]}>
           {children}
         </View>
       ) : (
         <BlurView
           intensity={intensity}
-          tint="light"
+          tint={isDark ? "dark" : "light"}
           style={styles.blur}
         >
           <View style={styles.content}>
@@ -45,17 +46,17 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     borderWidth: 1,
     borderColor: COLORS.glassBorder,
-    backgroundColor: "rgba(255, 255, 255, 0.45)",
+    backgroundColor: COLORS.glassBg,
     overflow: "hidden",
     ...Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.05,
-        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.3,
+        shadowRadius: 24,
       },
       android: {
-        elevation: 3,
+        elevation: 6,
       },
     }),
   },
@@ -69,5 +70,6 @@ const styles = StyleSheet.create({
   glassFallback: {
     padding: 20,
     width: "100%",
+    borderRadius: 24,
   },
 });

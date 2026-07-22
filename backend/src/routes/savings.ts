@@ -13,7 +13,7 @@ router.post(
   authenticate,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, targetAmount, mode, frequency, fixedAmount, isLocked, targetDate } = req.body;
+      const { name, targetAmount, mode, frequency, customDays, fixedAmount, isLocked, targetDate } = req.body;
 
       if (!name || !targetAmount || !mode) {
         throw new AppError(400, "MISSING_FIELDS");
@@ -28,6 +28,7 @@ router.post(
         targetAmount,
         mode,
         frequency,
+        customDays: customDays ? parseInt(customDays, 10) : undefined,
         fixedAmount,
         isLocked: !!isLocked,
         targetDate: targetDate ? new Date(targetDate) : undefined,

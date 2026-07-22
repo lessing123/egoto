@@ -23,6 +23,7 @@ async function main() {
       firstName: "Kofi",
       lastName: "Mensah",
       language: "fr",
+      egotoId: "EG-90123",
       score: {
         create: {
           score: 250,
@@ -44,7 +45,7 @@ async function main() {
     ],
   });
 
-  // 2. Création de Ama Adjo (Gold Tier)
+  // 2. Création de Ama Adjo (Gold Tier - Vérifié)
   console.log("👤 Création de Ama Adjo (+22891234567)...");
   const ama = await prisma.user.create({
     data: {
@@ -53,6 +54,10 @@ async function main() {
       firstName: "Ama",
       lastName: "Adjo",
       language: "fr",
+      egotoId: "EG-91234",
+      email: "ama.adjo@gmail.com",
+      cniNumber: "CNI-TG-8291",
+      isVerified: true,
       score: {
         create: {
           score: 650,

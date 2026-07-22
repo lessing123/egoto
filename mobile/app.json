@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "Egoto",
+    "slug": "egoto",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.egoto.app"
+    },
+    "android": {
+      "package": "com.egoto.app"
+    }
+  }
+}

@@ -14,9 +14,13 @@
 import { prisma } from "./src/lib/prisma";
 import { CircleService } from "./src/services/circle.service";
 import { PaymentService } from "./src/services/payment.service";
+import { AuthService } from "./src/services/auth.service";
+import { SavingsService } from "./src/services/savings.service";
 
 const circleService = new CircleService();
 const paymentService = new PaymentService();
+const authService = new AuthService();
+const savingsService = new SavingsService();
 
 async function runTests() {
   console.log("🚀 Début des tests d'intégration des tontines avancées...");
@@ -36,41 +40,69 @@ async function runTests() {
 
     console.log("🧹 Base de données nettoyée pour le test.");
 
-    // 2. Créer des utilisateurs de test
+    // 2. Créer des utilisateurs de test via AuthService pour générer les Egoto IDs
     // Kofi Mensah (Admin)
-    const kofi = await prisma.user.create({
-      data: {
-        phone: "+22890123456",
-        pinHash: "bcrypt_dummy",
-        firstName: "Kofi",
-        lastName: "Mensah",
-        language: "fr",
-      },
-    });
+    const kofiReg = await authService.register(
+      "+22890123456",
+      "1234",
+      "Kofi",
+      "Mensah",
+      "fr"
+    );
+    const kofi = kofiReg.user;
 
     // Ama Adjo (Membre 1)
-    const ama = await prisma.user.create({
-      data: {
-        phone: "+22891234567",
-        pinHash: "bcrypt_dummy",
-        firstName: "Ama",
-        lastName: "Adjo",
-        language: "fr",
-      },
-    });
+    const amaReg = await authService.register(
+      "+22891234567",
+      "1234",
+      "Ama",
+      "Adjo",
+      "fr"
+    );
+    const ama = amaReg.user;
 
     // Kodjo (Membre 2)
-    const kodjo = await prisma.user.create({
-      data: {
-        phone: "+22892222222",
-        pinHash: "bcrypt_dummy",
-        firstName: "Kodjo",
-        lastName: "Togo",
-        language: "fr",
-      },
-    });
+    const kodjoReg = await authService.register(
+      "+22892222222",
+      "1234",
+      "Kodjo",
+      "Togo",
+      "fr"
+    );
+    const kodjo = kodjoReg.user;
 
-    console.log(`👤 Utilisateurs créés : Kofi (${kofi.phone}), Ama (${ama.phone}), Kodjo (${kodjo.phone})`);
+    console.log(`👤 Utilisateurs créés avec Egoto IDs : Kofi (${kofi.egotoId}), Ama (${ama.egotoId}), Kodjo (${kodjo.egotoId})`);
+    if (!kofi.egotoId || !kofi.egotoId.startsWith("EG-")) {
+      throw new Error("❌ Échec: L'identifiant unique Egoto n'a pas été généré correctement.");
+    }
+
+    // Tester la vérification d'identité renforcée (KYC CNI/Passeport/Email)
+    console.log("🛡️ Soumission des pièces d'identité pour Ama (KYC)...");
+    const verifiedAma = await authService.verifyIdentity(ama.id, {
+      email: "ama.adjo@gmail.com",
+      cniNumber: "CNI-TG-8291",
+      passportNumber: "P-TG-9831",
+    });
+    console.log(`✅ Ama vérifiée : isVerified = ${verifiedAma.isVerified} | Email = ${verifiedAma.email}`);
+    if (!verifiedAma.isVerified || verifiedAma.email !== "ama.adjo@gmail.com") {
+      throw new Error("❌ Échec: La validation d'identité KYC de sécurité renforcée a échoué.");
+    }
+
+    // Tester la création de bol d'épargne avec fréquence personnalisée en jours
+    console.log("🍯 Création d'un bol d'épargne fixe de Kofi avec fréquence personnalisée (tous les 5 jours)...");
+    const customPot = await savingsService.create(kofi.id, {
+      name: "Achat pagnes grossiste",
+      targetAmount: 50000,
+      mode: "fixed",
+      frequency: "custom",
+      customDays: 5,
+      fixedAmount: 5000,
+      isLocked: true,
+    });
+    console.log(`✅ Bol d'épargne créé : ${customPot.name} | Fréquence : ${customPot.frequency} | Jours : ${customPot.customDays} jours`);
+    if (customPot.frequency !== "custom" || customPot.customDays !== 5) {
+      throw new Error("❌ Échec: La fréquence personnalisée en nombre de jours n'a pas été enregistrée.");
+    }
 
     // 3. Kofi crée une tontine de 3 membres max
     const circle = await circleService.create(kofi.id, {

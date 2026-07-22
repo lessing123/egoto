@@ -37,6 +37,18 @@ export class SimulatedPaymentProvider implements PaymentProvider {
       `💳 [Simulated] Paiement initié : ${params.amount} FCFA → ${params.phone} (ref: ${externalRef})`
     );
 
+    // Logger le code USSD Marchand pour Mixx by Yas (T-Money)
+    console.log(`
+╔════════════════════════════════════════════════════════════╗
+║ 📱 [SIMULATEUR DE DIALER USSD - MIXX BY YAS]
+╠════════════════════════════════════════════════════════════╣
+║ 📲 USSD Marchand T-Money : *145*5*${params.amount}*17711#
+║ 👤 Destinataire : ${params.phone}
+║ ⚙️ En prod: compose directement cette commande sur son phone.
+║    Le user saisit alors son code secret pour valider.
+╚════════════════════════════════════════════════════════════╝
+`);
+
     // Simule le délai de confirmation de l'opérateur (2-3 secondes)
     const delay = 2000 + Math.random() * 1000;
 

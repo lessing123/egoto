@@ -7,15 +7,20 @@ import {
   SafeAreaView,
   StatusBar,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   Dimensions,
   Alert,
   Modal,
   Platform,
+  Linking,
+  Share,
+  Image,
 } from "react-native";
 import { content, errorMessage, t, Language } from "@egoto/shared";
-import { COLORS } from "./src/theme/colors";
+import { COLORS, SEMANTIC_COLORS, THEME_STATE } from "./src/theme/colors";
 import { GlassCard } from "./src/components/GlassCard";
 import { Button, Input, ProgressBar } from "./src/components/UI";
+import { Logo } from "./src/components/Logo";
 import { Onboarding1 } from "./src/components/illustrations/Onboarding1";
 import { Onboarding2 } from "./src/components/illustrations/Onboarding2";
 import { Onboarding3 } from "./src/components/illustrations/Onboarding3";
@@ -30,10 +35,19 @@ import {
   UnlockIcon,
   PlusIcon,
   StarIcon,
+  ShieldIcon,
+  CrownIcon,
+  ShareIcon,
+  UserPlusIcon,
+  CameraIcon,
 } from "./src/components/Icons";
 import { api, setToken } from "./src/lib/api";
 
-const { width } = Dimensions.get("window");
+const { width, height: WINDOW_HEIGHT } = Dimensions.get("window");
+const isTablet = width > 600;
+const tabIconSize = isTablet ? 30 : 22;
+const actionIconSize = isTablet ? 26 : 18;
+const regularIconSize = isTablet ? 20 : 14;
 
 export default function App() {
   // Navigation State
@@ -66,8 +80,19 @@ export default function App() {
   const [adminInvitePhone, setAdminInvitePhone] = useState("");
   const [adminCircleName, setAdminCircleName] = useState("");
   const [circleForm, setCircleForm] = useState({ name: "", amount: "", frequency: "weekly", maxMembers: "5" });
-  const [potForm, setPotForm] = useState({ name: "", targetAmount: "", mode: "free", frequency: "weekly", fixedAmount: "", isLocked: false });
+  const [potForm, setPotForm] = useState({ name: "", targetAmount: "", mode: "free", frequency: "weekly", customDays: "", fixedAmount: "", isLocked: false });
   const [joinInviteCode, setJoinInviteCode] = useState("");
+  const [showZoomModal, setShowZoomModal] = useState(false);
+  const [zoomIndex, setZoomIndex] = useState(0);
+  const [currentTheme, setCurrentTheme] = useState<"forest" | "neon">("forest");
+
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  // Safety reinforced profile fields
+  const [securityEmail, setSecurityEmail] = useState("");
+  const [docType, setDocType] = useState<"cni" | "passport">("cni");
+  const [docNumber, setDocNumber] = useState("");
+  const [docImage, setDocImage] = useState<string | null>(null);
 
   // Contribute Modal States
   const [showContributeModal, setShowContributeModal] = useState(false);
@@ -76,10 +101,37 @@ export default function App() {
   const [contributeAmount, setContributeAmount] = useState("");
   const [contributeMethod, setContributeMethod] = useState<"tmoney" | "moov" | "bank" | "visa">("tmoney");
 
+  // Synchronise global shared theme state
+  THEME_STATE.isDark = isDarkMode;
+  const activeColorSchema = isDarkMode ? SEMANTIC_COLORS.dark : SEMANTIC_COLORS.light;
+
+  const THEME = {
+    isDark: isDarkMode,
+    bg: activeColorSchema.background,
+    cardBg: activeColorSchema.surface,
+    cardElevatedBg: activeColorSchema.surfaceElevated,
+    cardBorder: activeColorSchema.border,
+    primary: activeColorSchema.primary,
+    primaryForeground: activeColorSchema.primaryForeground,
+    text: activeColorSchema.textPrimary,
+    textLight: activeColorSchema.textPrimary,
+    textMuted: activeColorSchema.textSecondary,
+    inputBg: activeColorSchema.surfaceElevated,
+    inputBorder: activeColorSchema.border,
+    inputText: activeColorSchema.textPrimary,
+    glassBorder: activeColorSchema.border,
+    accent: activeColorSchema.accent,
+    accentForeground: activeColorSchema.accentForeground,
+  };
+
+  const headerBtnPadding = width > 600 ? { paddingVertical: 10, paddingHorizontal: 18 } : { paddingVertical: 6, paddingHorizontal: 12 };
+  const headerBtnTextSize = width > 600 ? 15 : 13;
+
   // Load Initial Session
   useEffect(() => {
-    StatusBar.setBarStyle("dark-content");
-  }, []);
+    THEME_STATE.isDark = isDarkMode;
+    StatusBar.setBarStyle(isDarkMode ? "light-content" : "dark-content");
+  }, [isDarkMode]);
 
   // Fetch App Data when entering Main screen or changing tabs
   const refreshData = async () => {
@@ -115,16 +167,25 @@ export default function App() {
   // ─── AUTH ACTIONS ──────────────────────────────────────────
 
   const handlePhoneCheck = async () => {
-    const cleanedPhone = phone.replace(/\s+/g, "");
-    console.log("Checking phone number:", cleanedPhone);
+    let cleanedPhone = phone.replace(/[\s\-\(\)]+/g, "");
+    console.log("Original phone:", phone, "Cleaned:", cleanedPhone);
+    
+    // Si l'utilisateur a tapé uniquement 8 chiffres, on ajoute +228
+    if (/^\d{8}$/.test(cleanedPhone)) {
+      cleanedPhone = "+228" + cleanedPhone;
+    }
+    // Si l'utilisateur a commencé par 00228
+    if (/^00228\d{8}$/.test(cleanedPhone)) {
+      cleanedPhone = "+" + cleanedPhone.substring(2);
+    }
     
     if (!/^\+228\d{8}$/.test(cleanedPhone)) {
       console.warn("Invalid phone format:", cleanedPhone);
       Alert.alert(
         language === "fr" ? "Format invalide" : "Invalid format",
         language === "fr" 
-          ? "Veuillez entrer un numéro au format +228 suivi de 8 chiffres sans espace (ex: +22890123456)." 
-          : "Please enter a number in the format +228 followed by 8 digits without spaces (e.g. +22890123456)."
+          ? "Veuillez entrer un numéro au format +228 suivi de 8 chiffres (ex: +228 90 12 34 56)." 
+          : "Please enter a number in the format +228 followed by 8 digits (e.g. +228 90 12 34 56)."
       );
       return;
     }
@@ -285,6 +346,23 @@ export default function App() {
     }
   };
 
+  const handleShareCircle = async (inviteCode: string) => {
+    const link = `https://egoto.app/join/${inviteCode}`;
+    const msg = language === "fr"
+      ? `Rejoins ma tontine sur Egoto avec le code d'invitation ${inviteCode} : ${link}`
+      : `Join my tontine on Egoto using the invite code ${inviteCode}: ${link}`;
+    
+    try {
+      await Share.share({
+        message: msg,
+        url: link,
+        title: "Invitation Tontine Egoto"
+      });
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
+  };
+
   const handleUpdateCircleName = async () => {
     if (!adminCircleTarget || !adminCircleName) return;
     setLoading(true);
@@ -332,6 +410,7 @@ export default function App() {
   const handleCreatePot = async () => {
     const targetNum = parseInt(potForm.targetAmount);
     const fixedNum = parseInt(potForm.fixedAmount);
+    const customDaysNum = parseInt(potForm.customDays);
     if (!potForm.name || isNaN(targetNum)) {
       Alert.alert(t(language, "errors.missingFields"));
       return;
@@ -342,6 +421,7 @@ export default function App() {
       targetAmount: targetNum,
       mode: potForm.mode as "free" | "fixed",
       frequency: potForm.mode === "fixed" ? potForm.frequency : undefined,
+      customDays: potForm.mode === "fixed" && potForm.frequency === "custom" && !isNaN(customDaysNum) ? customDaysNum : undefined,
       fixedAmount: potForm.mode === "fixed" ? fixedNum : undefined,
       isLocked: potForm.isLocked,
     });
@@ -349,7 +429,7 @@ export default function App() {
 
     if (res.success) {
       setShowCreatePot(false);
-      setPotForm({ name: "", targetAmount: "", mode: "free", frequency: "weekly", fixedAmount: "", isLocked: false });
+      setPotForm({ name: "", targetAmount: "", mode: "free", frequency: "weekly", customDays: "", fixedAmount: "", isLocked: false });
       refreshData();
       Alert.alert(t(language, "confirmations.potCreated"));
     } else {
@@ -396,12 +476,42 @@ export default function App() {
         };
         const selectedMethodName = methodLabels[contributeMethod];
         
-        Alert.alert(
-          language === "fr" ? "Paiement initié !" : "Payment initiated!",
-          language === "fr" 
-            ? `Votre versement de ${amountNum} FCFA via ${selectedMethodName} est en cours. Une confirmation vous sera notifiée sous peu.`
-            : `Your payment of ${amountNum} FCFA via ${selectedMethodName} is processing. You will receive a confirmation shortly.`
-        );
+        if (contributeMethod === "tmoney") {
+          // Lancement USSD T-Money Marchand Mixx by Yas
+          const ussdCode = `*145*5*${amountNum}*17711#`;
+          Alert.alert(
+            language === "fr" ? "Lancement USSD Marchand" : "USSD Merchant Launch",
+            language === "fr"
+              ? `Egotopay va lancer la composition USSD : ${ussdCode}.\n\nVous n'aurez qu'à entrer votre code secret de paiement T-Money pour valider le dépôt.`
+              : `Egotopay is launching the USSD composition: ${ussdCode}.\n\nYou only need to enter your T-Money PIN code to validate the deposit.`,
+            [
+              {
+                text: "OK",
+                onPress: async () => {
+                  try {
+                    const url = `tel:${encodeURIComponent(ussdCode)}`;
+                    await Linking.openURL(url);
+                  } catch (err) {
+                    console.error("Linking USSD error:", err);
+                    Alert.alert(
+                      language === "fr" ? "Erreur" : "Error",
+                      language === "fr"
+                        ? `Impossible de composer le code automatiquement. Veuillez composer manuellement : ${ussdCode}`
+                        : `Cannot dial automatically. Please dial manually: ${ussdCode}`
+                    );
+                  }
+                }
+              }
+            ]
+          );
+        } else {
+          Alert.alert(
+            language === "fr" ? "Paiement initié !" : "Payment initiated!",
+            language === "fr" 
+              ? `Votre versement de ${amountNum} FCFA via ${selectedMethodName} est en cours. Une confirmation vous sera notifiée sous peu.`
+              : `Your payment of ${amountNum} FCFA via ${selectedMethodName} is processing. You will receive a confirmation shortly.`
+          );
+        }
         
         // Rafraîchir les données après confirmation simulée
         setTimeout(refreshData, 3500);
@@ -488,11 +598,11 @@ export default function App() {
       <SafeAreaView style={styles.fullscreen}>
         {/* Language select on top */}
         <View style={styles.langBar}>
-          <TouchableOpacity onPress={() => setLanguage("fr")} style={language === "fr" && styles.langActive}>
-            <Text style={[styles.langText, language === "fr" && styles.langTextActive]}>FR</Text>
+          <TouchableOpacity onPress={() => setLanguage("fr")} style={[language === "fr" ? styles.langActive : {}, language === "fr" && { borderBottomColor: THEME.primary }]}>
+            <Text style={[styles.langText, language === "fr" && { color: THEME.primary }]}>FR</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setLanguage("en")} style={language === "en" && styles.langActive}>
-            <Text style={[styles.langText, language === "en" && styles.langTextActive]}>EN</Text>
+          <TouchableOpacity onPress={() => setLanguage("en")} style={[language === "en" ? styles.langActive : {}, language === "en" && { borderBottomColor: THEME.primary }]}>
+            <Text style={[styles.langText, language === "en" && { color: THEME.primary }]}>EN</Text>
           </TouchableOpacity>
         </View>
 
@@ -507,7 +617,14 @@ export default function App() {
           {/* Dots */}
           <View style={styles.dotsRow}>
             {slides.map((_, idx) => (
-              <View key={idx} style={[styles.dot, onboardingIndex === idx && styles.dotActive]} />
+              <View 
+                key={idx} 
+                style={[
+                  styles.dot, 
+                  { backgroundColor: isDarkMode ? "rgba(255, 255, 255, 0.2)" : "rgba(23, 51, 37, 0.2)" },
+                  onboardingIndex === idx && [styles.dotActive, { backgroundColor: THEME.primary }]
+                ]} 
+              />
             ))}
           </View>
 
@@ -535,20 +652,23 @@ export default function App() {
       <SafeAreaView style={styles.fullscreen}>
         <ScrollView contentContainerStyle={styles.authScroll}>
           <View style={styles.authHero}>
-            <Text style={styles.brandTitle}>Egoto</Text>
-            <Text style={styles.brandSubtitle}>Tontines & Épargne au Togo</Text>
+            <Logo size={80} />
+            <Text style={[styles.brandTitle, { color: THEME.text, marginTop: 12 }]}>Egoto</Text>
+            <Text style={[styles.brandSubtitle, { color: THEME.textMuted }]}>Tontines & Épargne au Togo</Text>
           </View>
 
           <GlassCard style={styles.authCard}>
             {authStep === "phone" && (
               <>
-                <Text style={styles.cardHeader}>{language === "fr" ? "Identifiez-vous" : "Identify Yourself"}</Text>
+                <Text style={[styles.cardHeader, { color: THEME.text }]}>{language === "fr" ? "Identifiez-vous" : "Identify Yourself"}</Text>
                 <Input
                   label={language === "fr" ? "Numéro de téléphone" : "Phone Number"}
-                  placeholder="+228 90 00 00 00"
+                  placeholder="90 00 00 00"
                   value={phone}
-                  onChangeText={setPhone}
-                  keyboardType="phone-pad"
+                  onChangeText={(val) => setPhone(val.replace(/[^0-9]/g, "").slice(0, 8))}
+                  keyboardType="numeric"
+                  prefix="+228"
+                  maxLength={8}
                 />
                 <Button title={language === "fr" ? "Continuer" : "Continue"} onPress={handlePhoneCheck} loading={loading} />
               </>
@@ -556,8 +676,8 @@ export default function App() {
 
             {authStep === "login" && (
               <>
-                <Text style={styles.cardHeader}>{language === "fr" ? "De retour !" : "Welcome Back"}</Text>
-                <Text style={styles.cardSubtitle}>{phone}</Text>
+                <Text style={[styles.cardHeader, { color: THEME.text }]}>{language === "fr" ? "De retour !" : "Welcome Back"}</Text>
+                <Text style={[styles.cardSubtitle, { color: THEME.textMuted }]}>{phone}</Text>
                 <Input
                   label="PIN"
                   placeholder="••••"
@@ -567,16 +687,16 @@ export default function App() {
                   keyboardType="numeric"
                 />
                 <Button title={language === "fr" ? "Se connecter" : "Log In"} onPress={handleLogin} loading={loading} />
-                <TouchableOpacity onPress={() => setAuthStep("phone")} style={styles.backLink}>
-                  <Text style={styles.backLinkText}>{language === "fr" ? "Changer de numéro" : "Change phone number"}</Text>
+                <TouchableOpacity onPress={() => { setPhone(phone.slice(-8)); setAuthStep("phone"); }} style={styles.backLink}>
+                  <Text style={[styles.backLinkText, { color: THEME.primary }]}>{language === "fr" ? "Changer de numéro" : "Change phone number"}</Text>
                 </TouchableOpacity>
               </>
             )}
 
             {authStep === "register" && (
               <>
-                <Text style={styles.cardHeader}>{language === "fr" ? "Créer un compte" : "Create Account"}</Text>
-                <Text style={styles.cardSubtitle}>{phone}</Text>
+                <Text style={[styles.cardHeader, { color: THEME.text }]}>{language === "fr" ? "Créer un compte" : "Create Account"}</Text>
+                <Text style={[styles.cardSubtitle, { color: THEME.textMuted }]}>{phone}</Text>
                 <Input
                   label={language === "fr" ? "Prénom" : "First Name"}
                   placeholder="Kofi"
@@ -598,8 +718,8 @@ export default function App() {
                   keyboardType="numeric"
                 />
                 <Button title={language === "fr" ? "S'enregistrer" : "Register"} onPress={handleRegister} loading={loading} />
-                <TouchableOpacity onPress={() => setAuthStep("phone")} style={styles.backLink}>
-                  <Text style={styles.backLinkText}>{language === "fr" ? "Changer de numéro" : "Change phone number"}</Text>
+                <TouchableOpacity onPress={() => { setPhone(phone.slice(-8)); setAuthStep("phone"); }} style={styles.backLink}>
+                  <Text style={[styles.backLinkText, { color: THEME.primary }]}>{language === "fr" ? "Changer de numéro" : "Change phone number"}</Text>
                 </TouchableOpacity>
               </>
             )}
@@ -609,16 +729,220 @@ export default function App() {
     );
   };
 
+  // ─── RENDERS — ZOOM MODAL CAROUSEL ─────────────────────────
+  const renderZoomModal = () => {
+    const totalPotsSaved = pots.reduce((sum, p) => sum + p.currentAmount, 0);
+    const scoreVal = scoreInfo?.score ?? 0;
+    const maxScore = 1000;
+    const percentage = Math.min(100, (scoreVal / maxScore) * 100);
+
+    const handleNext = () => {
+      setZoomIndex((prev) => (prev + 1) % 4);
+    };
+
+    const handlePrev = () => {
+      setZoomIndex((prev) => (prev - 1 + 4) % 4);
+    };
+
+    const handleAction = () => {
+      setShowZoomModal(false);
+      if (zoomIndex === 0) {
+        setActiveTab("cards");
+      } else if (zoomIndex === 1) {
+        setActiveTab("profile");
+      } else if (zoomIndex === 2) {
+        setActiveTab("pots");
+      } else if (zoomIndex === 3) {
+        setShowCreateCircle(true);
+      }
+    };
+
+    return (
+      <Modal visible={showZoomModal} animationType="fade" transparent>
+        <TouchableOpacity 
+          activeOpacity={1} 
+          onPress={() => setShowZoomModal(false)} 
+          style={styles.modalCenterBg}
+        >
+          <TouchableWithoutFeedback onPress={() => {}}>
+            <GlassCard style={StyleSheet.flatten([styles.modalCard, { maxHeight: WINDOW_HEIGHT * 0.8, width: width > 480 ? 420 : "92%", borderRadius: 28, padding: 20 }])} intensity={98}>
+              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <Text style={{ fontSize: 18, fontWeight: "bold", color: THEME.text }}>
+                  {zoomIndex === 0 && (language === "fr" ? "Carte VISA Virtuelle" : "Virtual VISA Card")}
+                  {zoomIndex === 1 && (language === "fr" ? "Score de Crédit Egoto" : "Egoto Credit Score")}
+                  {zoomIndex === 2 && (language === "fr" ? "Analyse de Performance" : "Activity Analysis")}
+                  {zoomIndex === 3 && (language === "fr" ? "Tontines Collectives" : "Collective Circles")}
+                </Text>
+                <TouchableOpacity onPress={() => setShowZoomModal(false)} style={{ padding: 8 }}>
+                  <Text style={{ color: COLORS.textGray, fontSize: 16, fontWeight: "bold" }}>X</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Slide Content */}
+              <ScrollView contentContainerStyle={{ alignItems: "center", paddingVertical: 12 }}>
+                {zoomIndex === 0 && (
+                  <View style={{ width: "100%", alignItems: "center" }}>
+                    <GlassCard style={StyleSheet.flatten([styles.visaCard, { width: "95%", height: 180, marginBottom: 20 }])}>
+                      <View style={styles.visaHeader}>
+                        <Text style={styles.visaBrand}>Egoto Gold</Text>
+                        <View style={styles.visaLogoContainer}>
+                          <Text style={styles.visaLogoText}>VISA</Text>
+                        </View>
+                      </View>
+                      <View style={styles.visaBody}>
+                        <Text style={styles.visaBalanceLabel}>{language === "fr" ? "SOLDE GLOBAL" : "TOTAL BALANCE"}</Text>
+                        <Text style={styles.visaBalanceValue}>{totalPotsSaved.toLocaleString()} FCFA</Text>
+                      </View>
+                      <View style={styles.visaFooter}>
+                        <View>
+                          <Text style={styles.visaUser}>{profile?.firstName} {profile?.lastName}</Text>
+                          <Text style={styles.visaId}>{profile?.egotoId || "EG-00000"}</Text>
+                        </View>
+                        <Text style={styles.visaExpiry}>12/29</Text>
+                      </View>
+                    </GlassCard>
+                    <Text style={{ color: THEME.text, fontSize: 14, textAlign: "center", lineHeight: 22, paddingHorizontal: 12, marginBottom: 12 }}>
+                      {language === "fr" 
+                        ? "Votre carte Egoto Gold regroupe l'ensemble de vos épargnes (Bols d'épargne) en un solde global. Utilisez-la pour vos achats en ligne et vos paiements internationaux."
+                        : "Your Egoto Gold card aggregates all your savings (Pots) into a total balance. Use it for online shopping and international payments."}
+                    </Text>
+                    <Text style={{ color: THEME.textMuted, fontSize: 12, textAlign: "center", fontStyle: "italic" }}>
+                      {language === "fr"
+                        ? "Disponible dès le palier Standard (200+ points)."
+                        : "Unlocked at Standard tier (200+ points)."}
+                    </Text>
+                  </View>
+                )}
+
+                {zoomIndex === 1 && (
+                  <View style={{ width: "100%", alignItems: "center" }}>
+                    <View style={[styles.healthScoreWidget, { width: 140, height: 140, marginBottom: 20 }]}>
+                      <View style={[styles.healthArcContainer, { width: 110, height: 110 }]}>
+                        <View style={[styles.healthOuterRing, { width: 100, height: 100, borderRadius: 50 }]} />
+                        <View style={[styles.healthProgressArc, { width: 100, height: 100, borderRadius: 50, transform: [{ rotate: `${(percentage * 1.8) - 90}deg` }], borderColor: THEME.primary }]} />
+                        <View style={styles.healthCenterCircle}>
+                          <Text style={[styles.healthScoreNumber, { fontSize: 26, color: THEME.text }]}>{scoreVal}</Text>
+                          <Text style={[styles.healthScoreMax, { color: THEME.textMuted }]}>/ {maxScore}</Text>
+                        </View>
+                      </View>
+                    </View>
+                    <Text style={{ color: COLORS.accent, fontSize: 16, fontWeight: "bold", marginBottom: 12, textTransform: "uppercase" }}>
+                      {scoreInfo ? t(language, `scoreTiers.${scoreInfo.tier}`) : "Débutant"}
+                    </Text>
+                    <Text style={{ color: THEME.text, fontSize: 14, textAlign: "center", lineHeight: 22, paddingHorizontal: 12, marginBottom: 12 }}>
+                      {scoreVal < 200 && (language === "fr"
+                        ? "Vous êtes actuellement Débutant. Effectuez des versements réguliers sans retard pour augmenter votre score Egoto et débloquer vos cartes."
+                        : "You are currently a Beginner. Save regularly on time to increase your score and unlock card products.")}
+                      {scoreVal >= 200 && scoreVal < 500 && (language === "fr"
+                        ? "Vous êtes Standard. Votre carte virtuelle est active ! Continuez à cotiser pour devenir éligible aux financements des IMF partenaires."
+                        : "You are Standard. Your virtual card is active! Keep saving to become eligible for MFI partner loans.")}
+                      {scoreVal >= 500 && scoreVal < 600 && (language === "fr"
+                        ? "Vous êtes éligible à la mise en relation IMF. Nous pouvons appuyer vos demandes de crédit commercial auprès de nos partenaires financiers."
+                        : "You are eligible for MFI referral. We can back your commercial credit requests with our financial partners.")}
+                      {scoreVal >= 600 && (language === "fr"
+                        ? "Palier Gold atteint ! Vous bénéficiez des meilleurs avantages, plafonds de paiement élevés et d'une carte Gold physique gratuite."
+                        : "Gold tier achieved! Benefit from premium features, higher limits, and a free physical Gold Visa card.")}
+                    </Text>
+                  </View>
+                )}
+
+                {zoomIndex === 2 && (
+                  <View style={{ width: "100%", alignItems: "center" }}>
+                    <View style={[styles.performanceWidget, { width: "95%", height: 120, marginBottom: 20 }]}>
+                      <View style={styles.chartContainer}>
+                        <View style={[styles.chartBar, { height: "35%", backgroundColor: THEME.primary }]} />
+                        <View style={[styles.chartBar, { height: "55%", backgroundColor: COLORS.accent }]} />
+                        <View style={[styles.chartBar, { height: "75%", backgroundColor: "#FF007F" }]} />
+                        <View style={[styles.chartBar, { height: "45%", backgroundColor: THEME.primary }]} />
+                        <View style={[styles.chartBar, { height: "90%", backgroundColor: COLORS.success }]} />
+                        <View style={[styles.chartBar, { height: "60%", backgroundColor: "#8E00FF" }]} />
+                        <View style={[styles.chartBar, { height: "80%", backgroundColor: THEME.primary }]} />
+                      </View>
+                    </View>
+                    <Text style={{ color: COLORS.success, fontSize: 16, fontWeight: "bold", marginBottom: 12 }}>
+                      +12.4% {language === "fr" ? "cette semaine" : "this week"}
+                    </Text>
+                    <Text style={{ color: THEME.text, fontSize: 14, textAlign: "center", lineHeight: 22, paddingHorizontal: 12 }}>
+                      {language === "fr"
+                        ? "Votre courbe de performance mesure votre réactivité. Chaque versement effectué à temps (bols d'épargne ou tontines collectives) augmente votre niveau d'activité globale."
+                        : "Your activity indicator tracks your savings consistency. Every contribution made on time increases your overall health level."}
+                    </Text>
+                  </View>
+                )}
+
+                {zoomIndex === 3 && (
+                  <View style={{ width: "100%", alignItems: "center" }}>
+                    <View style={{ padding: 20, borderRadius: 16, backgroundColor: isDarkMode ? "rgba(255,255,255,0.04)" : "rgba(23, 51, 37, 0.04)", width: "95%", alignItems: "center", marginBottom: 20 }}>
+                      <Text style={{ color: THEME.text, fontSize: 32, fontWeight: "bold" }}>{circles.length}</Text>
+                      <Text style={{ color: THEME.textMuted, fontSize: 13, marginTop: 4 }}>
+                        {language === "fr" ? "Tontines Actives rejoints" : "Active Circles joined"}
+                      </Text>
+                    </View>
+                    <Text style={{ color: THEME.text, fontSize: 14, textAlign: "center", lineHeight: 22, paddingHorizontal: 12, marginBottom: 12 }}>
+                      {language === "fr"
+                        ? "Les tontines collectives sont basées sur la solidarité. Invitez vos amis avec leur numéro ou partagez le code de votre tontine pour démarrer plus vite."
+                        : "Collective tontines are based on solidarity. Invite your friends by phone number or share the code to start your rounds faster."}
+                    </Text>
+                  </View>
+                )}
+              </ScrollView>
+
+              {/* Navigation controls */}
+              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 16 }}>
+                <TouchableOpacity onPress={handlePrev} style={{ padding: 12, backgroundColor: isDarkMode ? "rgba(255,255,255,0.06)" : "rgba(23, 51, 37, 0.06)", borderRadius: 12 }}>
+                  <Text style={{ color: THEME.text, fontSize: 14, fontWeight: "bold" }}>←</Text>
+                </TouchableOpacity>
+
+                <View style={{ flexDirection: "row", gap: 8 }}>
+                  {[0, 1, 2, 3].map((idx) => (
+                    <View 
+                      key={idx}
+                      style={{
+                        width: idx === zoomIndex ? 20 : 8,
+                        height: 8,
+                        borderRadius: 4,
+                        backgroundColor: idx === zoomIndex ? COLORS.primary : (isDarkMode ? "rgba(255,255,255,0.2)" : "rgba(23, 51, 37, 0.2)")
+                      }}
+                    />
+                  ))}
+                </View>
+
+                <TouchableOpacity onPress={handleNext} style={{ padding: 12, backgroundColor: isDarkMode ? "rgba(255,255,255,0.06)" : "rgba(23, 51, 37, 0.06)", borderRadius: 12 }}>
+                  <Text style={{ color: THEME.text, fontSize: 14, fontWeight: "bold" }}>→</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Action button */}
+              <Button
+                title={
+                  zoomIndex === 0 ? (language === "fr" ? "Gérer mes cartes" : "Manage Cards") :
+                  zoomIndex === 1 ? (language === "fr" ? "Voir mon profil" : "View Profile") :
+                  zoomIndex === 2 ? (language === "fr" ? "Aller à mes épargnes" : "Go to Savings") :
+                  (language === "fr" ? "Créer une tontine" : "Create Tontine")
+                }
+                onPress={handleAction}
+                style={{ marginTop: 8 }}
+              />
+            </GlassCard>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
+      </Modal>
+    );
+  };
+
   // ─── RENDERS — MAIN APP SCREEN ─────────────────────────────
 
   const renderMain = () => {
     return (
-      <SafeAreaView style={styles.mainContainer}>
+      <SafeAreaView style={[styles.mainContainer, { backgroundColor: THEME.bg }]}>
         {/* Top Header */}
-        <View style={styles.headerBar}>
-          <Text style={styles.headerBrand}>Egoto</Text>
+        <View style={[styles.headerBar, { borderBottomColor: THEME.glassBorder }]}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <Logo size={32} />
+            <Text style={[styles.headerBrand, { color: THEME.text }]}>Egoto</Text>
+          </View>
           <TouchableOpacity onPress={refreshData}>
-            <Text style={styles.refreshText}>{language === "fr" ? "Actualiser" : "Refresh"}</Text>
+            <Text style={[styles.refreshText, { color: THEME.primary }]}>{language === "fr" ? "Actualiser" : "Refresh"}</Text>
           </TouchableOpacity>
         </View>
 
@@ -635,32 +959,32 @@ export default function App() {
           <View style={styles.tabRow}>
             {/* Tab 1 */}
             <TouchableOpacity onPress={() => setActiveTab("home")} style={styles.tabButton}>
-              <HomeIcon color={activeTab === "home" ? COLORS.primary : COLORS.textGray} size={22} />
-              <Text style={[styles.tabLabelSub, activeTab === "home" && styles.tabLabelSubActive]}>{language === "fr" ? "Accueil" : "Home"}</Text>
+              <HomeIcon color={activeTab === "home" ? THEME.primary : THEME.textMuted} size={tabIconSize} />
+              <Text style={[styles.tabLabelSub, activeTab === "home" && styles.tabLabelSubActive, { color: activeTab === "home" ? THEME.primary : THEME.textMuted }]}>{language === "fr" ? "Accueil" : "Home"}</Text>
             </TouchableOpacity>
 
             {/* Tab 2 */}
             <TouchableOpacity onPress={() => setActiveTab("circles")} style={styles.tabButton}>
-              <CirclesIcon color={activeTab === "circles" ? COLORS.primary : COLORS.textGray} size={22} />
-              <Text style={[styles.tabLabelSub, activeTab === "circles" && styles.tabLabelSubActive]}>{language === "fr" ? "Tontines" : "Circles"}</Text>
+              <CirclesIcon color={activeTab === "circles" ? THEME.primary : THEME.textMuted} size={tabIconSize} />
+              <Text style={[styles.tabLabelSub, activeTab === "circles" && styles.tabLabelSubActive, { color: activeTab === "circles" ? THEME.primary : THEME.textMuted }]}>{language === "fr" ? "Tontines" : "Circles"}</Text>
             </TouchableOpacity>
 
             {/* Tab 3 */}
             <TouchableOpacity onPress={() => setActiveTab("pots")} style={styles.tabButton}>
-              <PotsIcon color={activeTab === "pots" ? COLORS.primary : COLORS.textGray} size={22} />
-              <Text style={[styles.tabLabelSub, activeTab === "pots" && styles.tabLabelSubActive]}>{language === "fr" ? "Bols" : "Pots"}</Text>
+              <PotsIcon color={activeTab === "pots" ? THEME.primary : THEME.textMuted} size={tabIconSize} />
+              <Text style={[styles.tabLabelSub, activeTab === "pots" && styles.tabLabelSubActive, { color: activeTab === "pots" ? THEME.primary : THEME.textMuted }]}>{language === "fr" ? "Bols" : "Pots"}</Text>
             </TouchableOpacity>
 
             {/* Tab 4 */}
             <TouchableOpacity onPress={() => setActiveTab("cards")} style={styles.tabButton}>
-              <CardsIcon color={activeTab === "cards" ? COLORS.primary : COLORS.textGray} size={22} />
-              <Text style={[styles.tabLabelSub, activeTab === "cards" && styles.tabLabelSubActive]}>{language === "fr" ? "Cartes" : "Cards"}</Text>
+              <CardsIcon color={activeTab === "cards" ? THEME.primary : THEME.textMuted} size={tabIconSize} />
+              <Text style={[styles.tabLabelSub, activeTab === "cards" && styles.tabLabelSubActive, { color: activeTab === "cards" ? THEME.primary : THEME.textMuted }]}>{language === "fr" ? "Cartes" : "Cards"}</Text>
             </TouchableOpacity>
 
             {/* Tab 5 */}
             <TouchableOpacity onPress={() => setActiveTab("profile")} style={styles.tabButton}>
-              <ProfileIcon color={activeTab === "profile" ? COLORS.primary : COLORS.textGray} size={22} />
-              <Text style={[styles.tabLabelSub, activeTab === "profile" && styles.tabLabelSubActive]}>{language === "fr" ? "Profil" : "Profile"}</Text>
+              <ProfileIcon color={activeTab === "profile" ? THEME.primary : THEME.textMuted} size={tabIconSize} />
+              <Text style={[styles.tabLabelSub, activeTab === "profile" && styles.tabLabelSubActive, { color: activeTab === "profile" ? THEME.primary : THEME.textMuted }]}>{language === "fr" ? "Profil" : "Profile"}</Text>
             </TouchableOpacity>
           </View>
         </GlassCard>
@@ -674,38 +998,115 @@ export default function App() {
   // ─── TABS ──────────────────────────────────────────────────
 
   // Tab 1: Accueil / Dashboard
+  // Tab 1: Accueil / Dashboard
   const renderTabHome = () => {
     const totalPotsSaved = pots.reduce((sum, p) => sum + p.currentAmount, 0);
+    const scoreVal = scoreInfo?.score ?? 0;
+    const maxScore = 1000;
+    const percentage = Math.min(100, (scoreVal / maxScore) * 100);
 
     return (
       <View style={styles.tabContent}>
-        {/* Welcome card */}
-        <GlassCard style={styles.dashboardHero}>
-          <Text style={styles.heroGreeting}>Miapé lolo / {language === "fr" ? "Salut" : "Hello"}, {profile?.firstName}</Text>
-          <Text style={styles.heroScoreLabel}>{language === "fr" ? "Score Egoto" : "Egoto Score"}</Text>
-          <Text style={styles.heroScoreValue}>{scoreInfo?.score ?? 0} pts</Text>
-          <Text style={styles.heroTier}>Palier : {scoreInfo ? t(language, `scoreTiers.${scoreInfo.tier}`) : "Débutant"}</Text>
-        </GlassCard>
+        {/* LIGNE 1 : Carte VISA Egoto & Score Jauge (FinPoint layout) */}
+        <View style={styles.finpointRow}>
+          
+          {/* Widget 1: Carte VISA Egoto Gold */}
+          <TouchableOpacity
+            style={{ flex: 1.3 }}
+            activeOpacity={0.95}
+            onPress={() => { setZoomIndex(0); setShowZoomModal(true); }}
+          >
+            <GlassCard style={StyleSheet.flatten([styles.visaCard, { flex: 1 }])}>
+              <View style={styles.visaHeader}>
+                <Text style={styles.visaBrand}>Egoto Gold</Text>
+                <View style={styles.visaLogoContainer}>
+                  <Text style={styles.visaLogoText}>VISA</Text>
+                </View>
+              </View>
+              
+              <View style={styles.visaBody}>
+                <Text style={styles.visaBalanceLabel}>{language === "fr" ? "SOLDE GLOBAL" : "TOTAL BALANCE"}</Text>
+                <Text style={styles.visaBalanceValue}>{totalPotsSaved.toLocaleString()} FCFA</Text>
+              </View>
+              
+              <View style={styles.visaFooter}>
+                <View>
+                  <Text style={styles.visaUser}>{profile?.firstName} {profile?.lastName}</Text>
+                  <Text style={styles.visaId}>{profile?.egotoId || "EG-00000"}</Text>
+                </View>
+                <Text style={styles.visaExpiry}>12/29</Text>
+              </View>
+            </GlassCard>
+          </TouchableOpacity>
 
-        {/* Savings overview */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{language === "fr" ? "Mes Épargnes" : "My Savings"}</Text>
+          {/* Widget 2: Score Egoto Health (Arc de progression circulaire) */}
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            activeOpacity={0.95}
+            onPress={() => { setZoomIndex(1); setShowZoomModal(true); }}
+          >
+            <GlassCard style={StyleSheet.flatten([styles.healthScoreWidget, { flex: 1 }])}>
+              <Text style={styles.healthLabel}>{language === "fr" ? "Score Egoto" : "Egoto Score"}</Text>
+              
+              <View style={styles.healthArcContainer}>
+                <View style={styles.healthOuterRing} />
+                <View style={[styles.healthProgressArc, { transform: [{ rotate: `${(percentage * 1.8) - 90}deg` }], borderColor: THEME.primary }]} />
+                <View style={styles.healthCenterCircle}>
+                  <Text style={styles.healthScoreNumber}>{scoreVal}</Text>
+                  <Text style={styles.healthScoreMax}>/ {maxScore}</Text>
+                </View>
+              </View>
+              
+              <Text style={styles.healthTierText}>{scoreInfo ? t(language, `scoreTiers.${scoreInfo.tier}`) : "Débutant"}</Text>
+            </GlassCard>
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.homeStatsRow}>
-          <GlassCard style={styles.statBox}>
-            <Text style={styles.statLabel}>{language === "fr" ? "Bols d'épargne" : "Savings pots"}</Text>
-            <Text style={styles.statValue}>{totalPotsSaved} FCFA</Text>
-          </GlassCard>
+        {/* LIGNE 2 : Performance Histogramme & Tontines Actives */}
+        <View style={styles.finpointRow}>
+          
+          {/* Widget 3: Mini-Graphique (Histogramme néon) */}
+          <TouchableOpacity
+            style={{ flex: 1.3 }}
+            activeOpacity={0.95}
+            onPress={() => { setZoomIndex(2); setShowZoomModal(true); }}
+          >
+            <GlassCard style={StyleSheet.flatten([styles.performanceWidget, { flex: 1 }])}>
+              <View style={styles.perfHeader}>
+                <Text style={styles.perfLabel}>{language === "fr" ? "Activité Hebdo" : "Weekly Activity"}</Text>
+                <Text style={styles.perfValue}>+12.4%</Text>
+              </View>
+              
+              <View style={styles.chartContainer}>
+                <View style={[styles.chartBar, { height: "35%", backgroundColor: THEME.primary }]} />
+                <View style={[styles.chartBar, { height: "55%", backgroundColor: COLORS.accent }]} />
+                <View style={[styles.chartBar, { height: "75%", backgroundColor: "#FF007F" }]} />
+                <View style={[styles.chartBar, { height: "45%", backgroundColor: THEME.primary }]} />
+                <View style={[styles.chartBar, { height: "90%", backgroundColor: COLORS.success }]} />
+                <View style={[styles.chartBar, { height: "60%", backgroundColor: "#8E00FF" }]} />
+                <View style={[styles.chartBar, { height: "80%", backgroundColor: THEME.primary }]} />
+              </View>
+            </GlassCard>
+          </TouchableOpacity>
 
-          <GlassCard style={styles.statBox}>
-            <Text style={styles.statLabel}>{language === "fr" ? "Tontines actives" : "Active tontines"}</Text>
-            <Text style={styles.statValue}>{circles.length}</Text>
-          </GlassCard>
+          {/* Widget 4: Tontines Status */}
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            activeOpacity={0.95}
+            onPress={() => { setZoomIndex(3); setShowZoomModal(true); }}
+          >
+            <GlassCard style={StyleSheet.flatten([styles.tontineStatWidget, { flex: 1 }])}>
+              <Text style={styles.statBoxLabel}>{language === "fr" ? "Tontines Actives" : "Active Circles"}</Text>
+              <Text style={styles.tontineStatNumber}>{circles.length}</Text>
+              <Text style={styles.tontineStatSub}>
+                {circles.filter((c: any) => c._count.members === c.maxMembers).length} {language === "fr" ? "en cours" : "running"}
+              </Text>
+            </GlassCard>
+          </TouchableOpacity>
         </View>
 
         {/* Call to action onboarding style for empty lists */}
-        {circles.length === 0 && pots.length === 0 && (
+        {circles.length === 0 && pots.length === 0 ? (
           <View style={styles.emptyStateContainer}>
             <EmptyState />
             <Text style={styles.emptyStateText}>{language === "fr" ? "Aucune tontine ni bol d'épargne. C'est le moment de commencer !" : "No tontines or savings pots yet. Time to start!"}</Text>
@@ -713,6 +1114,11 @@ export default function App() {
               <Button title={language === "fr" ? "Créer un cercle" : "Create circle"} onPress={() => setShowCreateCircle(true)} style={styles.actionBtn} />
               <Button title={language === "fr" ? "Créer un bol" : "Create pot"} onPress={() => setShowCreatePot(true)} variant="secondary" style={styles.actionBtn} />
             </View>
+          </View>
+        ) : (
+          <View style={styles.dashboardQuickActions}>
+            <Button title={language === "fr" ? "Nouveau cercle" : "New circle"} onPress={() => setShowCreateCircle(true)} style={styles.quickActionBtn} />
+            <Button title={language === "fr" ? "Nouveau bol" : "New pot"} onPress={() => setShowCreatePot(true)} variant="secondary" style={styles.quickActionBtn} />
           </View>
         )}
       </View>
@@ -724,13 +1130,23 @@ export default function App() {
     return (
       <View style={styles.tabContent}>
         <View style={styles.tabHeaderRow}>
-          <Text style={styles.sectionTitle}>{language === "fr" ? "Cercles de tontine" : "Tontine Circles"}</Text>
+          <Text style={[styles.sectionTitle, { color: THEME.text }]}>{language === "fr" ? "Cercles de tontine" : "Tontine Circles"}</Text>
           <View style={styles.rowActions}>
-            <TouchableOpacity onPress={() => setShowJoinCircle(true)} style={styles.headerIconBtn}>
-              <Text>{language === "fr" ? "Rejoindre" : "Join"}</Text>
+            <TouchableOpacity 
+              onPress={() => setShowJoinCircle(true)} 
+              style={[styles.headerIconBtn, headerBtnPadding]}
+            >
+              <Text style={{ color: THEME.text, fontSize: headerBtnTextSize, fontWeight: "bold" }}>
+                {language === "fr" ? "Rejoindre" : "Join"}
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setShowCreateCircle(true)} style={styles.headerIconBtn}>
-              <Text>{language === "fr" ? "Créer" : "Create"}</Text>
+            <TouchableOpacity 
+              onPress={() => setShowCreateCircle(true)} 
+              style={[styles.headerIconBtn, headerBtnPadding]}
+            >
+              <Text style={{ color: THEME.text, fontSize: headerBtnTextSize, fontWeight: "bold" }}>
+                {language === "fr" ? "Créer" : "Create"}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -783,9 +1199,14 @@ export default function App() {
     return (
       <View style={styles.tabContent}>
         <View style={styles.tabHeaderRow}>
-          <Text style={styles.sectionTitle}>{language === "fr" ? "Bols d'Épargne" : "Savings Pots"}</Text>
-          <TouchableOpacity onPress={() => setShowCreatePot(true)} style={styles.headerIconBtn}>
-            <Text>{language === "fr" ? "Créer un bol" : "Create pot"}</Text>
+          <Text style={[styles.sectionTitle, { color: THEME.text }]}>{language === "fr" ? "Bols d'Épargne" : "Savings Pots"}</Text>
+          <TouchableOpacity 
+            onPress={() => setShowCreatePot(true)} 
+            style={[styles.headerIconBtn, headerBtnPadding]}
+          >
+            <Text style={{ color: THEME.text, fontSize: headerBtnTextSize, fontWeight: "bold" }}>
+              {language === "fr" ? "Créer un bol" : "Create pot"}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -834,7 +1255,7 @@ export default function App() {
       <View style={styles.tabContent}>
         {/* Score Jauge / Progress */}
         <GlassCard style={styles.scoreJaugeCard}>
-          <Text style={styles.sectionTitle}>{language === "fr" ? "Score Egoto" : "Egoto Score"}</Text>
+          <Text style={[styles.sectionTitle, { color: THEME.text }]}>{language === "fr" ? "Score Egoto" : "Egoto Score"}</Text>
           <Text style={styles.scoreNumber}>{scoreInfo?.score ?? 0} <Text style={styles.scoreMax}>/ 1000</Text></Text>
           <Text style={styles.scoreProgressText}>
             {scoreInfo?.nextTier
@@ -845,7 +1266,7 @@ export default function App() {
 
         {/* Active Visa Cards */}
         <View style={styles.tabHeaderRow}>
-          <Text style={styles.sectionTitle}>{language === "fr" ? "Mes cartes Visa Egoto" : "My Egoto Visa Cards"}</Text>
+          <Text style={[styles.sectionTitle, { color: THEME.text }]}>{language === "fr" ? "Mes cartes Visa Egoto" : "My Egoto Visa Cards"}</Text>
         </View>
 
         {cards.length === 0 ? (
@@ -879,40 +1300,227 @@ export default function App() {
 
   // Tab 5: Profil
   const renderTabProfile = () => {
+    const handleVerifyIdentity = async () => {
+      if (!docNumber) {
+        Alert.alert(
+          language === "fr" ? "Numéro requis" : "Number required",
+          language === "fr"
+            ? `Veuillez renseigner votre numéro de ${docType === "cni" ? "CNI" : "Passeport"}.`
+            : `Please enter your ${docType === "cni" ? "CNI" : "Passport"} number.`
+        );
+        return;
+      }
+
+      if (!docImage) {
+        Alert.alert(
+          language === "fr" ? "Photo requise" : "Photo required",
+          language === "fr"
+            ? "Veuillez prendre en photo votre document d'identité pour finaliser la vérification."
+            : "Please take a photo of your identity document to finalize the verification."
+        );
+        return;
+      }
+      
+      setLoading(true);
+      try {
+        const res = await api.verifyIdentity({
+          email: securityEmail || undefined,
+          cniNumber: docType === "cni" ? docNumber : undefined,
+          passportNumber: docType === "passport" ? docNumber : undefined,
+        });
+        setLoading(false);
+        if (res.success) {
+          setProfile(res.data);
+          Alert.alert(
+            language === "fr" ? "Sécurité renforcée !" : "Enhanced security!",
+            language === "fr" 
+              ? "Vos informations d'identité et la photo de votre document ont été enregistrées avec succès." 
+              : "Your identity credentials and document photo have been successfully verified."
+          );
+        } else {
+          Alert.alert(errorMessage(language, res.error?.code || "GENERIC"));
+        }
+      } catch (e) {
+        setLoading(false);
+        Alert.alert(language === "fr" ? "Erreur de connexion" : "Connection Error");
+      }
+    };
+
     return (
-      <View style={styles.tabContent}>
-        <GlassCard style={styles.profileCard}>
-          <Text style={styles.profileName}>{profile?.firstName} {profile?.lastName}</Text>
-          <Text style={styles.profilePhone}>{profile?.phone}</Text>
-          
-          <View style={styles.divider} />
-          
-          <Text style={styles.settingsHeader}>{language === "fr" ? "Préférences" : "Settings"}</Text>
-          
-          {/* Langue toggle */}
-          <View style={styles.settingsRow}>
-            <Text style={styles.settingLabel}>{language === "fr" ? "Langue" : "Language"}</Text>
-            <View style={styles.langToggleGroup}>
-              <TouchableOpacity onPress={() => setLanguage("fr")} style={[styles.langBtn, language === "fr" && styles.langBtnActive]}>
-                <Text style={[styles.langBtnText, language === "fr" && styles.langBtnTextActive]}>FR</Text>
+      <View style={{ flex: 1 }}>
+        <View style={styles.tabContent}>
+          <GlassCard style={styles.profileCard}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <Text style={[styles.profileName, { color: THEME.textLight }]}>{profile?.firstName} {profile?.lastName}</Text>
+              {profile?.isVerified ? (
+                <View style={[styles.securityBadge, { backgroundColor: "rgba(0, 230, 86, 0.15)", borderColor: COLORS.success, flexDirection: "row", alignItems: "center", gap: 4 }]}>
+                  <ShieldIcon color={COLORS.success} size={12} />
+                  <Text style={[styles.securityBadgeText, { color: COLORS.success }]}>{language === "fr" ? "Renforcé" : "Reinforced"}</Text>
+                </View>
+              ) : (
+                <View style={[styles.securityBadge, { backgroundColor: "rgba(255, 145, 0, 0.15)", borderColor: COLORS.warning, flexDirection: "row", alignItems: "center", gap: 4 }]}>
+                  <ShieldIcon color={COLORS.warning} size={12} />
+                  <Text style={[styles.securityBadgeText, { color: COLORS.warning }]}>{language === "fr" ? "Standard" : "Standard"}</Text>
+                </View>
+              )}
+            </View>
+            <Text style={[styles.profilePhone, { color: THEME.textMuted }]}>{profile?.phone}</Text>
+            <Text style={[styles.profileId, { color: THEME.textLight }]}>Egoto ID : {profile?.egotoId || "N/A"}</Text>
+            
+            <View style={styles.divider} />
+            
+            {/* Formulaire de sécurité renforcée */}
+            <Text style={[styles.settingsHeader, { color: THEME.textLight }]}>{language === "fr" ? "Renforcement de la sécurité (KYC)" : "Identity Verification & Security"}</Text>
+            <Text style={[styles.settingsSub, { color: THEME.textMuted }]}>{language === "fr" ? "Ajoutez vos pièces officielles pour déverrouiller toutes les limites." : "Verify your official identity cards to unlock higher tiers."}</Text>
+            
+            <Input
+              label={language === "fr" ? "Adresse E-mail" : "Email Address"}
+              placeholder="kofi.mensah@gmail.com"
+              value={securityEmail || profile?.email || ""}
+              onChangeText={setSecurityEmail}
+              keyboardType="email-address"
+            />
+
+            {/* Sélecteur de type de document */}
+            <Text style={{ color: THEME.textLight, fontSize: 14, fontWeight: "500", marginBottom: 8 }}>
+              {language === "fr" ? "Type de Document" : "Document Type"}
+            </Text>
+            <View style={{ flexDirection: "row", gap: 10, marginBottom: 16 }}>
+              <TouchableOpacity 
+                onPress={() => setDocType("cni")}
+                style={[
+                  { borderColor: THEME.inputBorder, backgroundColor: "rgba(255,255,255,0.03)", flex: 1, height: 48, borderRadius: 12, borderWidth: 1, justifyContent: "center", alignItems: "center" },
+                  docType === "cni" ? { backgroundColor: THEME.primary, borderColor: THEME.primary } : {}
+                ]}
+              >
+                <Text style={[{ color: THEME.textLight, fontSize: 13 }, docType === "cni" ? { color: THEME.primaryForeground, fontWeight: "bold" } : {}]}>
+                  {language === "fr" ? "Carte d'Identité (CNI)" : "National ID (CNI)"}
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setLanguage("en")} style={[styles.langBtn, language === "en" && styles.langBtnActive]}>
-                <Text style={[styles.langBtnText, language === "en" && styles.langBtnTextActive]}>EN</Text>
+              
+              <TouchableOpacity 
+                onPress={() => setDocType("passport")}
+                style={[
+                  { borderColor: THEME.inputBorder, backgroundColor: "rgba(255,255,255,0.03)", flex: 1, height: 48, borderRadius: 12, borderWidth: 1, justifyContent: "center", alignItems: "center" },
+                  docType === "passport" ? { backgroundColor: THEME.primary, borderColor: THEME.primary } : {}
+                ]}
+              >
+                <Text style={[{ color: THEME.textLight, fontSize: 13 }, docType === "passport" ? { color: THEME.primaryForeground, fontWeight: "bold" } : {}]}>
+                  {language === "fr" ? "Passeport" : "Passport"}
+                </Text>
               </TouchableOpacity>
             </View>
-          </View>
 
-          <Button
-            title={language === "fr" ? "Se déconnecter" : "Log Out"}
-            onPress={() => {
-              setToken(null);
-              setProfile(null);
-              setCurrentScreen("auth");
-            }}
-            variant="danger"
-            style={styles.logoutBtn}
-          />
-        </GlassCard>
+            <Input
+              label={docType === "cni" ? (language === "fr" ? "Numéro CNI (Carte d'Identité)" : "National ID Card Number (CNI)") : (language === "fr" ? "Numéro de Passeport" : "Passport Number")}
+              placeholder={docType === "cni" ? "CNI-TG-XXXXXX" : "N-TG-XXXXXX"}
+              value={docNumber || (docType === "cni" ? profile?.cniNumber : profile?.passportNumber) || ""}
+              onChangeText={setDocNumber}
+            />
+
+            {/* Bouton Photo */}
+            <Text style={{ color: THEME.textLight, fontSize: 14, fontWeight: "500", marginBottom: 8 }}>
+              {language === "fr" ? "Photo du Document" : "Document Photo"}
+            </Text>
+            
+            <TouchableOpacity 
+              onPress={() => setDocImage("https://images.unsplash.com/photo-1554774853-aae0a22c8aa4?w=500&q=80")}
+              style={[
+                { height: 50, borderRadius: 12, borderWidth: 1, borderStyle: "dashed", justifyContent: "center", alignItems: "center", marginBottom: 12, borderColor: THEME.inputBorder, flexDirection: "row", gap: 8 },
+                docImage ? { borderColor: COLORS.success, borderStyle: "solid" } : {}
+              ]}
+            >
+              {docImage ? (
+                <>
+                  <ShieldIcon color={COLORS.success} size={18} />
+                  <Text style={{ color: COLORS.success, fontSize: 14, fontWeight: "600" }}>
+                    {language === "fr" ? "Photo capturée avec succès" : "Photo captured successfully"}
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <CameraIcon color={THEME.primary} size={18} />
+                  <Text style={{ color: THEME.textLight, fontSize: 14 }}>
+                    {language === "fr" ? "Photographier le document" : "Take document photo"}
+                  </Text>
+                </>
+              )}
+            </TouchableOpacity>
+
+            {docImage && (
+              <View style={{ alignItems: "center", marginVertical: 14 }}>
+                <Image 
+                  source={{ uri: docImage }} 
+                  style={{ width: "100%", height: 160, borderRadius: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.15)" }} 
+                />
+              </View>
+            )}
+            
+            <Button
+              title={language === "fr" ? "Activer la Sécurité Renforcée" : "Enable Enhanced Security"}
+              onPress={handleVerifyIdentity}
+              loading={loading}
+              style={{ marginTop: 12 }}
+            />
+
+            <View style={styles.divider} />
+            
+            <Text style={styles.settingsHeader}>{language === "fr" ? "Préférences" : "Settings"}</Text>
+            
+            {/* Langue toggle */}
+            <View style={styles.settingsRow}>
+              <Text style={styles.settingLabel}>{language === "fr" ? "Langue" : "Language"}</Text>
+              <View style={styles.langToggleGroup}>
+                <TouchableOpacity onPress={() => setLanguage("fr")} style={[styles.langBtn, language === "fr" && styles.langBtnActive]}>
+                  <Text style={[styles.langBtnText, language === "fr" && styles.langBtnTextActive]}>FR</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setLanguage("en")} style={[styles.langBtn, language === "en" && styles.langBtnActive]}>
+                  <Text style={[styles.langBtnText, language === "en" && styles.langBtnTextActive]}>EN</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Thème toggle */}
+            <View style={styles.settingsRow}>
+              <Text style={[styles.settingLabel, { color: THEME.textLight }]}>{language === "fr" ? "Mode Visuel" : "Visual Theme"}</Text>
+              <View style={styles.langToggleGroup}>
+                <TouchableOpacity 
+                  onPress={() => {
+                    setIsDarkMode(true);
+                    COLORS.isDark = true;
+                  }} 
+                  style={[styles.langBtn, isDarkMode && styles.langBtnActive]}
+                >
+                  <Text style={[styles.langBtnText, isDarkMode && styles.langBtnTextActive]}>
+                    {language === "fr" ? "Sombre" : "Dark"}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  onPress={() => {
+                    setIsDarkMode(false);
+                    COLORS.isDark = false;
+                  }} 
+                  style={[styles.langBtn, !isDarkMode && styles.langBtnActive]}
+                >
+                  <Text style={[styles.langBtnText, !isDarkMode && styles.langBtnTextActive]}>
+                    {language === "fr" ? "Clair" : "Light"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <Button
+              title={language === "fr" ? "Se déconnecter" : "Log Out"}
+              onPress={() => {
+                setToken(null);
+                setProfile(null);
+                setCurrentScreen("auth");
+              }}
+              variant="danger"
+              style={styles.logoutBtn}
+            />
+          </GlassCard>
+        </View>
       </View>
     );
   };
@@ -1035,16 +1643,27 @@ export default function App() {
                   />
                   <Text style={styles.inputLabel}>{language === "fr" ? "Fréquence des versements" : "Frequency"}</Text>
                   <View style={styles.freqRow}>
-                    {["weekly", "biweekly", "monthly"].map((f) => (
+                    {["weekly", "biweekly", "monthly", "custom"].map((f) => (
                       <TouchableOpacity
                         key={f}
                         onPress={() => setPotForm({ ...potForm, frequency: f })}
                         style={[styles.freqBtn, potForm.frequency === f && styles.freqBtnActive]}
                       >
-                        <Text style={[styles.freqBtnText, potForm.frequency === f && styles.freqBtnTextActive]}>{t(language, `labels.${f}`)}</Text>
+                        <Text style={[styles.freqBtnText, potForm.frequency === f && styles.freqBtnTextActive]}>
+                          {f === "custom" ? (language === "fr" ? "Perso" : "Custom") : t(language, `labels.${f}`)}
+                        </Text>
                       </TouchableOpacity>
                     ))}
                   </View>
+                  {potForm.frequency === "custom" && (
+                    <Input
+                      label={language === "fr" ? "Tous les combien de jours ?" : "Every how many days?"}
+                      placeholder="ex: 5"
+                      value={potForm.customDays}
+                      onChangeText={(text) => setPotForm({ ...potForm, customDays: text })}
+                      keyboardType="numeric"
+                    />
+                  )}
                 </>
               )}
 
@@ -1053,7 +1672,7 @@ export default function App() {
                 onPress={() => setPotForm({ ...potForm, isLocked: !potForm.isLocked })}
                 style={[styles.lockToggleRow, { flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 8 }]}
               >
-                {potForm.isLocked ? <LockIcon size={18} color={COLORS.accent} /> : <UnlockIcon size={18} color={COLORS.primary} />}
+                {potForm.isLocked ? <LockIcon size={18} color={THEME.accent} /> : <UnlockIcon size={18} color={THEME.primary} />}
                 <Text style={styles.lockToggleText}>
                   {potForm.isLocked 
                     ? (language === "fr" ? "Épargne bloquée (retrait restreint)" : "Locked account") 
@@ -1181,18 +1800,23 @@ export default function App() {
                   </View>
 
                   {/* Section 2: Code d'accès unique */}
-                  <View style={{ marginBottom: 20, padding: 12, borderRadius: 8, backgroundColor: "rgba(255, 255, 255, 0.08)", alignItems: "center" }}>
+                  <View style={{ marginBottom: 20, padding: 16, borderRadius: 16, backgroundColor: "rgba(255, 255, 255, 0.08)", alignItems: "center" }}>
                     <Text style={{ fontSize: 13, color: "rgba(255, 255, 255, 0.6)", marginBottom: 4 }}>
                       {language === "fr" ? "CODE D'INVITATION (5 CARACTÈRES)" : "INVITATION CODE (5 CHARACTERS)"}
                     </Text>
                     <Text style={{ fontSize: 24, fontWeight: "bold", letterSpacing: 3, color: COLORS.accent }}>
                       {adminCircleTarget.inviteCode || "—"}
                     </Text>
-                    <Text style={{ fontSize: 11, color: "rgba(255, 255, 255, 0.4)", marginTop: 4, textAlign: "center" }}>
+                    <Text style={{ fontSize: 11, color: "rgba(255, 255, 255, 0.4)", marginTop: 4, marginBottom: 12, textAlign: "center" }}>
                       {language === "fr" 
                         ? "Partagez ce code avec les participants pour qu'ils rejoignent directement sur l'application ou sur WhatsApp."
                         : "Share this code with participants to let them join directly via the App or WhatsApp."}
                     </Text>
+                    <Button
+                      title={language === "fr" ? "Copier & Partager le lien" : "Copy & Share Link"}
+                      onPress={() => handleShareCircle(adminCircleTarget.inviteCode)}
+                      style={{ width: "90%", height: 38, borderRadius: 19 }}
+                    />
                   </View>
 
                   {/* Section 3: Inviter un membre */}
@@ -1239,9 +1863,12 @@ export default function App() {
                           }}
                         >
                           <View style={{ flex: 1 }}>
-                            <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>
-                              {m.position}. {m.user.firstName} {m.user.lastName} {m.role === "admin" && "👑"}
-                            </Text>
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                              <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>
+                                {m.position}. {m.user.firstName} {m.user.lastName}
+                              </Text>
+                              {m.role === "admin" && <CrownIcon size={12} color={COLORS.accent} />}
+                            </View>
                             <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>
                               {m.user.phone}
                             </Text>
@@ -1279,14 +1906,22 @@ export default function App() {
             </GlassCard>
           </View>
         </Modal>
+        {renderZoomModal()}
       </>
     );
   };
 
   // ─── CYCLE DE VIE GENERAL ──────────────────────────────────
 
+  const bubbleOpacity = isDarkMode ? 0.08 : 0.02;
+
   return (
     <View style={styles.root}>
+      {/* Liquid background shapes - Prestigious Forest & Gold lueurs */}
+      <View style={[styles.glowBubble, styles.glowTeal, { backgroundColor: THEME.primary, opacity: bubbleOpacity }]} />
+      <View style={[styles.glowBubble, styles.glowGold, { backgroundColor: THEME.accent, opacity: bubbleOpacity }]} />
+      <View style={[styles.glowBubble, styles.glowPurple, { backgroundColor: THEME.primary, opacity: bubbleOpacity }]} />
+      
       {currentScreen === "onboarding" && renderOnboarding()}
       {currentScreen === "auth" && renderAuth()}
       {currentScreen === "main" && renderMain()}
@@ -1299,13 +1934,41 @@ export default function App() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: COLORS.bgLight,
+    backgroundColor: COLORS.primaryDark,
+    minHeight: WINDOW_HEIGHT,
+    width: "100%",
+    overflow: "hidden",
   },
   fullscreen: {
     flex: 1,
-    backgroundColor: COLORS.bgLight,
+    backgroundColor: "transparent",
     justifyContent: "space-between",
   },
+  
+  // Liquid background shapes
+  glowBubble: {
+    position: "absolute",
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    opacity: 0.12,
+  },
+  glowTeal: {
+    top: -60,
+    left: -60,
+    backgroundColor: COLORS.primary,
+  },
+  glowGold: {
+    bottom: "35%",
+    right: -80,
+    backgroundColor: COLORS.accent,
+  },
+  glowPurple: {
+    bottom: -60,
+    left: -40,
+    backgroundColor: "#8E00FF",
+  },
+
   langBar: {
     flexDirection: "row",
     justifyContent: "flex-end",
@@ -1336,10 +1999,9 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   onboardTitle: {
-    fontFamily: "System",
     fontSize: 26,
     fontWeight: "bold",
-    color: COLORS.primaryDark,
+    color: "#FFFFFF",
     textAlign: "center",
     marginBottom: 16,
   },
@@ -1363,7 +2025,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "#E2EAE7",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
   },
   dotActive: {
     width: 24,
@@ -1387,7 +2049,7 @@ const styles = StyleSheet.create({
   brandTitle: {
     fontSize: 36,
     fontWeight: "bold",
-    color: COLORS.primaryDark,
+    color: "#FFFFFF",
   },
   brandSubtitle: {
     fontSize: 14,
@@ -1400,7 +2062,7 @@ const styles = StyleSheet.create({
   cardHeader: {
     fontSize: 20,
     fontWeight: "bold",
-    color: COLORS.textDark,
+    color: "#FFFFFF",
     marginBottom: 8,
   },
   cardSubtitle: {
@@ -1422,7 +2084,7 @@ const styles = StyleSheet.create({
   // Main Dashboard
   mainContainer: {
     flex: 1,
-    backgroundColor: "#F4F7F6",
+    backgroundColor: COLORS.primaryDark,
   },
   headerBar: {
     flexDirection: "row",
@@ -1430,14 +2092,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 14,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "transparent",
     borderBottomWidth: 1,
-    borderBottomColor: "#EBF0EE",
+    borderBottomColor: COLORS.glassBorder,
   },
   headerBrand: {
     fontSize: 20,
     fontWeight: "bold",
-    color: COLORS.primaryDark,
+    color: "#FFFFFF",
   },
   refreshText: {
     color: COLORS.primary,
@@ -1447,25 +2109,27 @@ const styles = StyleSheet.create({
   mainScroll: {
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 100, // leave space for bottom tab bar
+    paddingBottom: 180, // space for tab bar to avoid overflow cover
   },
   tabBar: {
     position: "absolute",
-    bottom: 20,
+    bottom: 24,
     left: 20,
     right: 20,
     borderRadius: 30,
     padding: 0,
-    backgroundColor: "rgba(255, 255, 255, 0.85)",
+    backgroundColor: "rgba(11, 14, 20, 0.85)",
+    borderWidth: 1,
+    borderColor: COLORS.glassBorder,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.08,
-        shadowRadius: 20,
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.4,
+        shadowRadius: 24,
       },
       android: {
-        elevation: 6,
+        elevation: 8,
       },
     }),
   },
@@ -1499,73 +2163,232 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
-  // Tab - Home
+  // Tab - Home (FinPoint Premium Layout)
   tabContent: {
-    gap: 20,
+    gap: 16,
   },
-  dashboardHero: {
-    backgroundColor: COLORS.primaryDark,
-    borderColor: "rgba(255, 255, 255, 0.1)",
-    padding: 24,
+  finpointRow: {
+    flexDirection: "row",
+    gap: 12,
   },
-  heroGreeting: {
-    fontSize: 16,
-    color: "rgba(255, 255, 255, 0.7)",
+  
+  // VISA Card Widget
+  visaCard: {
+    flex: 1.3,
+    height: 180,
+    backgroundColor: "rgba(186, 117, 23, 0.08)",
+    borderColor: "rgba(255, 184, 0, 0.2)",
+    padding: 16,
+    justifyContent: "space-between",
+    position: "relative",
   },
-  heroScoreLabel: {
-    fontSize: 12,
-    color: "rgba(255, 255, 255, 0.5)",
-    marginTop: 16,
-  },
-  heroScoreValue: {
-    fontSize: 38,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-    marginTop: 4,
-  },
-  heroTier: {
-    fontSize: 14,
-    color: COLORS.accent,
-    fontWeight: "600",
-    marginTop: 8,
-  },
-  sectionHeader: {
+  visaHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
+  visaBrand: {
+    fontSize: 13,
+    fontWeight: "bold",
+    color: COLORS.accent,
+    letterSpacing: 1.5,
+  },
+  visaLogoContainer: {
+    backgroundColor: "rgba(255,255,255,0.05)",
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    borderRadius: 4,
+  },
+  visaLogoText: {
+    fontSize: 11,
+    fontWeight: "900",
+    color: COLORS.accent,
+    fontStyle: "italic",
+  },
+  visaBody: {
+    marginVertical: 12,
+  },
+  visaBalanceLabel: {
+    fontSize: 9,
+    color: "rgba(255,255,255,0.4)",
+    letterSpacing: 1,
+    fontWeight: "600",
+  },
+  visaBalanceValue: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    marginTop: 4,
+  },
+  visaFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+  },
+  visaUser: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+  },
+  visaId: {
+    fontSize: 9,
+    color: COLORS.textGray,
+    marginTop: 1,
+  },
+  visaExpiry: {
+    fontSize: 10,
+    color: "rgba(255,255,255,0.6)",
+    fontWeight: "500",
+  },
+
+  // Health Circular Score Widget
+  healthScoreWidget: {
+    flex: 1,
+    height: 180,
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 12,
+  },
+  healthLabel: {
+    fontSize: 11,
+    fontWeight: "bold",
+    color: COLORS.textGray,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  healthArcContainer: {
+    width: 90,
+    height: 90,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+  },
+  healthOuterRing: {
+    position: "absolute",
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 6,
+    borderColor: "rgba(255, 255, 255, 0.04)",
+  },
+  healthProgressArc: {
+    position: "absolute",
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 6,
+    borderColor: "transparent",
+    borderTopColor: COLORS.primary,
+    borderRightColor: COLORS.primary,
+  },
+  healthCenterCircle: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  healthScoreNumber: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+  },
+  healthScoreMax: {
+    fontSize: 10,
+    color: COLORS.textGray,
+  },
+  healthTierText: {
+    fontSize: 11,
+    color: COLORS.accent,
+    fontWeight: "bold",
+  },
+
+  // Performance (Chart) Widget
+  performanceWidget: {
+    flex: 1.3,
+    height: 140,
+    padding: 12,
+    justifyContent: "space-between",
+  },
+  perfHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  perfLabel: {
+    fontSize: 11,
+    color: COLORS.textGray,
+    fontWeight: "600",
+  },
+  perfValue: {
+    fontSize: 11,
+    color: COLORS.success,
+    fontWeight: "bold",
+  },
+  chartContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    height: 80,
+    paddingTop: 10,
+    gap: 4,
+  },
+  chartBar: {
+    flex: 1,
+    borderRadius: 3,
+    opacity: 0.85,
+  },
+
+  // Tontine Stats Widget
+  tontineStatWidget: {
+    flex: 1,
+    height: 140,
+    padding: 12,
+    justifyContent: "center",
+  },
+  statBoxLabel: {
+    fontSize: 11,
+    color: COLORS.textGray,
+    fontWeight: "600",
+    textTransform: "uppercase",
+  },
+  tontineStatNumber: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    marginVertical: 4,
+  },
+  tontineStatSub: {
+    fontSize: 10,
+    color: COLORS.success,
+    fontWeight: "500",
+  },
+
+  dashboardQuickActions: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 10,
+  },
+  quickActionBtn: {
+    flex: 1,
+  },
+
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 8,
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: COLORS.primaryDark,
-  },
-  homeStatsRow: {
-    flexDirection: "row",
-    gap: 16,
-  },
-  statBox: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: "#FFFFFF",
-  },
-  statLabel: {
-    fontSize: 12,
-    color: COLORS.textGray,
-  },
-  statValue: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: COLORS.textDark,
-    marginTop: 6,
+    color: "#FFFFFF",
   },
   emptyStateContainer: {
     alignItems: "center",
     justifyContent: "center",
     padding: 30,
-    backgroundColor: "#FFFFFF",
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: "#EBF0EE",
+    borderColor: COLORS.glassBorder,
+    backgroundColor: COLORS.glassBg,
   },
   emptyStateText: {
     textAlign: "center",
@@ -1578,10 +2401,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
     marginTop: 20,
+    width: "100%",
   },
   actionBtn: {
     flex: 1,
-    height: 44,
   },
 
   // Tab - Items list
@@ -1593,18 +2416,19 @@ const styles = StyleSheet.create({
   },
   rowActions: {
     flexDirection: "row",
-    gap: 12,
+    gap: 8,
   },
   headerIconBtn: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.glassBg,
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#EBF0EE",
+    borderColor: COLORS.glassBorder,
   },
   listItemCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.glassBg,
+    borderColor: COLORS.glassBorder,
   },
   itemHeader: {
     flexDirection: "row",
@@ -1614,7 +2438,7 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: COLORS.textDark,
+    color: "#FFFFFF",
     flex: 1,
   },
   itemBadge: {
@@ -1662,7 +2486,8 @@ const styles = StyleSheet.create({
 
   // Cards & Score Tab
   scoreJaugeCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.glassBg,
+    borderColor: COLORS.glassBorder,
     alignItems: "center",
     paddingVertical: 24,
   },
@@ -1684,16 +2509,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   cardItem: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: "rgba(0, 240, 255, 0.1)",
+    borderColor: "rgba(0, 240, 255, 0.2)",
+    borderWidth: 1,
     height: 160,
     padding: 20,
     justifyContent: "space-between",
-    borderRadius: 16,
+    borderRadius: 20,
   },
   cardGold: {
-    backgroundColor: "#202020",
-    borderWidth: 1.5,
+    backgroundColor: "rgba(255, 184, 0, 0.08)",
     borderColor: COLORS.accent,
+    borderWidth: 1.5,
   },
   cardTierText: {
     color: "#FFFFFF",
@@ -1724,7 +2551,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   cardToggleBtn: {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 8,
@@ -1743,31 +2570,54 @@ const styles = StyleSheet.create({
 
   // Profile Tab
   profileCard: {
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
+    backgroundColor: COLORS.glassBg,
+    borderColor: COLORS.glassBorder,
+    alignItems: "stretch",
+    padding: 24,
   },
   profileName: {
     fontSize: 20,
     fontWeight: "bold",
-    color: COLORS.textDark,
+    color: "#FFFFFF",
   },
   profilePhone: {
     fontSize: 14,
     color: COLORS.textGray,
     marginTop: 4,
   },
+  profileId: {
+    fontSize: 12,
+    color: COLORS.accent,
+    fontWeight: "600",
+    marginTop: 4,
+  },
+  securityBadge: {
+    borderWidth: 1,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+  },
+  securityBadgeText: {
+    fontSize: 11,
+    fontWeight: "bold",
+  },
   divider: {
     height: 1,
-    backgroundColor: "#EBF0EE",
+    backgroundColor: COLORS.glassBorder,
     width: "100%",
     marginVertical: 20,
   },
   settingsHeader: {
-    alignSelf: "flex-start",
     fontSize: 16,
     fontWeight: "bold",
-    color: COLORS.primaryDark,
+    color: "#FFFFFF",
+    marginBottom: 4,
+  },
+  settingsSub: {
+    fontSize: 12,
+    color: COLORS.textGray,
     marginBottom: 16,
+    lineHeight: 18,
   },
   settingsRow: {
     flexDirection: "row",
@@ -1778,19 +2628,19 @@ const styles = StyleSheet.create({
   },
   settingLabel: {
     fontSize: 15,
-    color: COLORS.textDark,
+    color: "#FFFFFF",
   },
   langToggleGroup: {
     flexDirection: "row",
     borderWidth: 1,
-    borderColor: "#EBF0EE",
+    borderColor: COLORS.glassBorder,
     borderRadius: 8,
     overflow: "hidden",
   },
   langBtn: {
     paddingVertical: 6,
     paddingHorizontal: 16,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "transparent",
   },
   langBtnActive: {
     backgroundColor: COLORS.primary,
@@ -1801,30 +2651,39 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   langBtnTextActive: {
-    color: "#FFFFFF",
+    color: "#000000",
   },
   logoutBtn: {
     width: "100%",
-    marginTop: 10,
+    marginTop: 20,
   },
 
   // Modal Views
   modalBg: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     justifyContent: "flex-end",
+  },
+  modalCenterBg: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
   },
   modalCard: {
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
     borderRadius: 0,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.primaryDark,
+    borderColor: COLORS.glassBorder,
+    borderWidth: 1,
     maxHeight: "90%",
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: COLORS.primaryDark,
+    color: "#FFFFFF",
     marginBottom: 20,
   },
   modalActions: {
@@ -1837,7 +2696,7 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     fontSize: 14,
-    color: COLORS.textDark,
+    color: "#FFFFFF",
     marginBottom: 6,
     fontWeight: "500",
   },
@@ -1850,12 +2709,15 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     borderRadius: 10,
-    backgroundColor: "#F0F4F2",
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    borderColor: COLORS.glassBorder,
+    borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
   },
   freqBtnActive: {
     backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
   },
   freqBtnText: {
     fontSize: 13,
@@ -1863,16 +2725,16 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   freqBtnTextActive: {
-    color: "#FFFFFF",
+    color: "#000000",
   },
   lockToggleRow: {
-    backgroundColor: "#FDF7EE",
+    backgroundColor: "rgba(255, 184, 0, 0.05)",
     padding: 14,
     borderRadius: 14,
     alignItems: "center",
     marginVertical: 10,
     borderWidth: 1,
-    borderColor: "rgba(186, 117, 23, 0.2)",
+    borderColor: "rgba(255, 184, 0, 0.2)",
   },
   lockToggleText: {
     color: COLORS.accent,
@@ -1890,17 +2752,17 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#EBF0EE",
-    backgroundColor: "#FFFFFF",
+    borderColor: COLORS.glassBorder,
+    backgroundColor: "rgba(255, 255, 255, 0.03)",
   },
   paymentMethodCardActive: {
     borderColor: COLORS.primary,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: "rgba(0, 240, 255, 0.08)",
   },
   paymentMethodTitle: {
     fontSize: 14,
     fontWeight: "bold",
-    color: COLORS.textDark,
+    color: "#FFFFFF",
   },
   paymentMethodTextActive: {
     color: COLORS.primary,

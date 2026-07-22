@@ -600,15 +600,23 @@ async function handleGetProfile(session: UserSession): Promise<string> {
   const user = res.data;
   const scoreLabel = user.score?.score ?? 0;
   const tierLabel = t(lang, `scoreTiers.${user.score?.tier || "beginner"}`);
+  const securityStatus = user.isVerified 
+    ? (lang === "fr" ? "Sécurité Renforcée (Vérifié)" : "Enhanced Security (Verified)")
+    : (lang === "fr" ? "Standard (Non vérifié)" : "Standard (Unverified)");
 
   let text = lang === "fr"
     ? `👤 *Ton Profil Egoto :*\n\n`
     : `👤 *Your Egoto Profile:*\n\n`;
 
+  text += `🆔 ID Egoto : ${user.egotoId || "N/A"}\n`;
   text += `📝 Prénom : ${user.firstName}\n`;
   text += `📝 Nom : ${user.lastName}\n`;
   text += `📞 Numéro : ${user.phone}\n`;
-  text += `📈 Score : ${scoreLabel} (${tierLabel})\n\n`;
+  if (user.email) {
+    text += `📧 Email : ${user.email}\n`;
+  }
+  text += `📈 Score : ${scoreLabel} (${tierLabel})\n`;
+  text += `🛡️ Statut : ${securityStatus}\n\n`;
   text += `*0* Retour au menu principal`;
   return text;
 }

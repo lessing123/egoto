@@ -2,7 +2,17 @@
 // Egoto Mobile — Client API
 // ═══════════════════════════════════════════════════════════════
 
-const BACKEND_URL = "http://localhost:3000/api";
+import { Platform } from "react-native";
+
+// Adresse IP locale de la machine de développement (ipconfig) : 192.168.0.30
+// Utilisé pour que l'appareil physique ou l'émulateur puisse joindre le serveur de dev.
+const DEV_HOST = "192.168.0.30";
+
+const BACKEND_URL = Platform.select({
+  android: `http://${DEV_HOST}:3000/api`,
+  ios: `http://${DEV_HOST}:3000/api`,
+  default: "http://localhost:3000/api",
+});
 
 let sessionToken: string | null = null;
 
@@ -63,6 +73,7 @@ export const api = {
   login: (phone: string, pin: string) => request("POST", "/auth/login", { phone, pin }),
   getProfile: () => request("GET", "/auth/me"),
   updateProfile: (data: { firstName?: string; lastName?: string; language?: string }) => request("PUT", "/auth/me", data),
+  verifyIdentity: (data: { email?: string; cniNumber?: string; passportNumber?: string }) => request("POST", "/auth/verify-identity", data),
   
   createCircle: (data: { name: string; amount: number; frequency: string; maxMembers: number }) =>
     request("POST", "/circles", data),
@@ -76,7 +87,7 @@ export const api = {
   initiateCircleContribution: (circleId: string) => request("POST", `/contributions/circle/${circleId}`),
   initiatePotContribution: (potId: string, amount: number) => request("POST", `/contributions/pot/${potId}`, { amount }),
   
-  createPot: (data: { name: string; targetAmount: number; mode: "fixed" | "free"; frequency?: string; fixedAmount?: number; isLocked: boolean }) =>
+  createPot: (data: { name: string; targetAmount: number; mode: "fixed" | "free"; frequency?: string; customDays?: number; fixedAmount?: number; isLocked: boolean }) =>
     request("POST", "/savings", data),
   listPots: () => request("GET", "/savings"),
   getPotDetail: (potId: string) => request("GET", `/savings/${potId}`),

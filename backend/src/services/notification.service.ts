@@ -14,7 +14,7 @@ export class NotificationService {
     const border = "═".repeat(60);
     console.log(`
 ╔${border}╗
-║ ⚡ Egoto Notifications (SMS & WhatsApp)
+║ ⚡ Egoto Notifications (SMS & WhatsApp Clairs)
 ╠${border}╣
 ║ 👤 Destinataire : ${phone}
 ║ 📝 Message :
@@ -24,20 +24,64 @@ export class NotificationService {
   }
 
   /**
-   * Notification d'invitation directe à un cercle
+   * Simule l'envoi d'un message WhatsApp éphémère
+   */
+  async sendWhatsAppEphemeral(phone: string, message: string): Promise<void> {
+    const border = "═".repeat(60);
+    console.log(`
+╔${border}╗
+║ ⚡ [WHATSAPP ÉPHÉMÈRE - Disparaîtra après lecture]
+╠${border}╣
+║ 👤 Destinataire : ${phone}
+║ 📝 Message :
+║   "${message}"
+╚${border}╝
+`);
+  }
+
+  /**
+   * Simule l'envoi d'un e-mail
+   */
+  async sendEmail(email: string, subject: string, message: string): Promise<void> {
+    const border = "═".repeat(60);
+    console.log(`
+╔${border}╗
+║ ⚡ Egoto Notifications (E-Mail)
+╠${border}╣
+║ 👤 Destinataire : ${email}
+║ 📧 Objet : ${subject}
+║ 📝 Message :
+║   "${message}"
+╚${border}╝
+`);
+  }
+
+  /**
+   * Notification d'invitation directe à un cercle (WhatsApp éphémère + SMS + Email facultatif)
    */
   async notifyInvitation(
     phone: string,
     circleName: string,
     role: string,
     inviteCode: string,
-    language: string
+    language: string,
+    email?: string | null
   ): Promise<void> {
     const msg = language === "en"
       ? `Hello! You have been added to the tontine circle "${circleName}" as a ${role}. Invite Code: ${inviteCode}. Dial *145# or join on WhatsApp/App!`
       : `Salut! Tu as été ajouté au cercle de tontine "${circleName}" avec le rôle ${role === "admin" ? "administrateur" : "membre"}. Code d'invitation : ${inviteCode}. Compose le *145# ou rejoins sur WhatsApp/App !`;
       
+    // Envoyer via WhatsApp Éphémère (comme requis)
+    await this.sendWhatsAppEphemeral(phone, msg);
+    
+    // Envoyer via SMS
     await this.sendSMSAndWhatsApp(phone, msg);
+
+    // Envoyer par e-mail si disponible
+    if (email) {
+      const subject = language === "en" ? `Egoto - Tontine Invitation` : `Egoto - Invitation Tontine`;
+      await this.sendEmail(email, subject, msg);
+    }
   }
 
   /**

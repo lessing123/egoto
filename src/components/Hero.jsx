@@ -293,22 +293,22 @@ const FloatingCoin = ({ src, className = "", style }) => (
 const FloatingCoinsBackground = () => {
   const coins = [
     // Left side coins
-    { src: "/devises/100cfa.jpg", className: "left-[2%] top-[8%] w-[100px] sm:w-[130px] animate-drift-float opacity-[0.65]" },
-    { src: "/devises/25CFA.jpg", className: "left-[14%] top-[22%] w-[80px] sm:w-[100px] animate-sway opacity-[0.55]", delay: "-1.5s" },
+    { src: "/devises/CFA.jpg", className: "left-[2%] top-[8%] w-[100px] sm:w-[130px] animate-drift-float opacity-[0.65]" },
+    { src: "/devises/CFA.jpg", className: "left-[14%] top-[22%] w-[80px] sm:w-[100px] animate-sway opacity-[0.55]", delay: "-1.5s" },
     { src: "/devises/CFA.jpg", className: "left-[25%] top-[8%] w-[90px] sm:w-[110px] animate-money-float opacity-[0.5]", delay: "-3s" },
-    { src: "/devises/cemac.jpg", className: "left-[8%] top-[45%] w-[85px] sm:w-[110px] animate-sway opacity-[0.5]", delay: "-4.5s" },
-    { src: "/devises/we.jpg", className: "left-[4%] bottom-[28%] w-[90px] sm:w-[115px] animate-drift-float opacity-[0.5]", delay: "-5.2s" },
-    { src: "/devises/ghc.jpg", className: "left-[18%] bottom-[12%] w-[85px] sm:w-[110px] animate-drift-float opacity-[0.6]", delay: "-2s" },
-    { src: "/devises/yen.jpg", className: "left-[28%] bottom-[25%] w-[80px] sm:w-[100px] animate-money-float opacity-[0.45]", delay: "-2.8s" },
+    { src: "/devises/CFA.jpg", className: "left-[8%] top-[45%] w-[85px] sm:w-[110px] animate-sway opacity-[0.5]", delay: "-4.5s" },
+    { src: "/devises/CFA.jpg", className: "left-[4%] bottom-[28%] w-[90px] sm:w-[115px] animate-drift-float opacity-[0.5]", delay: "-5.2s" },
+    { src: "/devises/CFA.jpg", className: "left-[18%] bottom-[12%] w-[85px] sm:w-[110px] animate-drift-float opacity-[0.6]", delay: "-2s" },
+    { src: "/devises/CFA.jpg", className: "left-[28%] bottom-[25%] w-[80px] sm:w-[100px] animate-money-float opacity-[0.45]", delay: "-2.8s" },
     
     // Right side coins
-    { src: "/devises/dollars.jpg", className: "right-[3%] top-[6%] w-[110px] sm:w-[140px] animate-drift-float opacity-[0.7]", delay: "-0.5s" },
-    { src: "/devises/NAIRA.jpg", className: "right-[15%] top-[12%] w-[95px] sm:w-[120px] animate-drift-float opacity-[0.6]", delay: "-2.5s" },
-    { src: "/devises/dirham.jpg", className: "right-[25%] top-[28%] w-[90px] sm:w-[115px] animate-money-float opacity-[0.55]", delay: "-1s" },
-    { src: "/devises/euro.jpg", className: "right-[5%] top-[48%] w-[100px] sm:w-[130px] animate-sway opacity-[0.65]", delay: "-3.5s" },
-    { src: "/devises/rand.jpg", className: "right-[12%] bottom-[18%] w-[95px] sm:w-[125px] animate-money-float opacity-[0.55]", delay: "-4s" },
-    { src: "/devises/yoan.avif", className: "right-[32%] bottom-[22%] w-[85px] sm:w-[105px] animate-drift-float opacity-[0.5]", delay: "-0.8s" },
-    { src: "/devises/sterling.png", className: "right-[22%] bottom-[6%] w-[90px] sm:w-[115px] animate-sway opacity-[0.6]", delay: "-1.8s" }
+    { src: "/devises/CFA.jpg", className: "right-[3%] top-[6%] w-[110px] sm:w-[140px] animate-drift-float opacity-[0.7]", delay: "-0.5s" },
+    { src: "/devises/CFA.jpg", className: "right-[15%] top-[12%] w-[95px] sm:w-[120px] animate-drift-float opacity-[0.6]", delay: "-2.5s" },
+    { src: "/devises/CFA.jpg", className: "right-[25%] top-[28%] w-[90px] sm:w-[115px] animate-money-float opacity-[0.55]", delay: "-1s" },
+    { src: "/devises/CFA.jpg", className: "right-[5%] top-[48%] w-[100px] sm:w-[130px] animate-sway opacity-[0.65]", delay: "-3.5s" },
+    { src: "/devises/CFA.jpg", className: "right-[12%] bottom-[18%] w-[95px] sm:w-[125px] animate-money-float opacity-[0.55]", delay: "-4s" },
+    { src: "/devises/CFA.jpg", className: "right-[32%] bottom-[22%] w-[85px] sm:w-[105px] animate-drift-float opacity-[0.5]", delay: "-0.8s" },
+    { src: "/devises/CFA.jpg", className: "right-[22%] bottom-[6%] w-[90px] sm:w-[115px] animate-sway opacity-[0.6]", delay: "-1.8s" }
   ];
 
   return (

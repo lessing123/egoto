@@ -66,7 +66,7 @@ const Footer = () => {
                   </a>
                 </li>
                 <li>
-                  <a href="mailto:prisille.gogoyi@egoto.xyz" className="font-body text-sm text-paper-dim hover:text-terracotta transition-colors">
+                  <a href="mailto:priscille.gogoyi@egoto.xyz" className="font-body text-sm text-paper-dim hover:text-terracotta transition-colors">
                     {t("footer.partnerships")}
                   </a>
                 </li>

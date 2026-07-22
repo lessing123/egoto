@@ -75,6 +75,7 @@ export const content = {
       invalidCredentials: "Numéro ou PIN incorrect.",
       circleNotFull: "La tontine doit être complète avant de pouvoir cotiser.",
       notAnAdmin: "Action réservée à l'administrateur de la tontine.",
+      verificationRequired: "CNI ou numéro de passeport obligatoire pour la sécurité renforcée.",
     },
 
     // ── Labels (interface) ────────────────────────────────
@@ -215,6 +216,7 @@ export const content = {
       invalidCredentials: "Incorrect number or PIN.",
       circleNotFull: "The tontine circle must be full before contributing.",
       notAnAdmin: "Only the tontine administrator can perform this action.",
+      verificationRequired: "National ID (CNI) or Passport number is required for enhanced security.",
     },
 
     labels: {
@@ -329,6 +331,7 @@ const errorCodeMap: Record<string, keyof ContentMap["errors"]> = {
   INVALID_AMOUNT: "invalidAmount",
   INVALID_FREQUENCY: "invalidFrequency",
   USER_NOT_FOUND: "userNotFound",
+  VERIFICATION_REQUIRED: "verificationRequired",
 };
 
 export function errorMessage(lang: Language, code: string): string {

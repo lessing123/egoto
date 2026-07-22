@@ -3,6 +3,7 @@ import { AuthService } from "../services/auth.service";
 import { authenticate } from "../middleware/auth.middleware";
 import { validatePhone, validatePin } from "../utils/validators";
 import { AppError } from "../middleware/errorHandler";
+import { prisma } from "../lib/prisma";
 
 const router = Router();
 const authService = new AuthService();
@@ -142,6 +143,43 @@ router.put(
 
       await authService.changePin(req.user!.id, oldPin, newPin);
       res.json({ success: true, message: "PIN_CHANGED" });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// ─── POST /api/auth/verify-identity ──────────────────────
+// Soumettre email, CNI ou Passeport pour renforcement de sécurité
+router.post(
+  "/verify-identity",
+  authenticate,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, cniNumber, passportNumber } = req.body;
+      const userRecord = await prisma.user.findUnique({
+        where: { id: req.user!.id }
+      });
+      
+      const hasCNI = !!(cniNumber || userRecord?.cniNumber);
+      const hasPassport = !!(passportNumber || userRecord?.passportNumber);
+      
+      if (!hasCNI && !hasPassport) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: "VERIFICATION_REQUIRED",
+            message: "CNI or Passport number is required for identity verification."
+          }
+        });
+      }
+
+      const user = await authService.verifyIdentity(req.user!.id, {
+        email,
+        cniNumber,
+        passportNumber,
+      });
+      res.json({ success: true, data: user });
     } catch (err) {
       next(err);
     }
