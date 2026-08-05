@@ -941,8 +941,8 @@ export default function App() {
             <Logo size={32} />
             <Text style={[styles.headerBrand, { color: THEME.text }]}>Egoto</Text>
           </View>
-          <TouchableOpacity onPress={refreshData}>
-            <Text style={[styles.refreshText, { color: THEME.primary }]}>{language === "fr" ? "Actualiser" : "Refresh"}</Text>
+          <TouchableOpacity onPress={refreshData} style={{ padding: 6 }}>
+            <Text style={{ fontSize: 20 }}>🔄</Text>
           </TouchableOpacity>
         </View>
 

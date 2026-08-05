@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "66d26b8f-1d19-475c-81c9-dd8c246410b6"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "egoto",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.obed_bless.egotomonorepo"
+    }
+  }
+}
